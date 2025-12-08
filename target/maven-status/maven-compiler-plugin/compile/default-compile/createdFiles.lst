@@ -1,0 +1,10 @@
+com\uns\config\JPAFactory.class
+com\uns\config\TestConnection.class
+com\uns\entities\Unidad.class
+com\uns\dao\DAO.class
+com\uns\entities\Grupo.class
+com\uns\dao\UnidadDAO.class
+com\uns\controller\UnidadBean.class
+com\mycompany\web\acme\JakartaRestConfiguration.class
+com\mycompany\web\acme\resources\JakartaEE10Resource.class
+com\uns\entities\Material.class
