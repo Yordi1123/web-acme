@@ -293,6 +293,8 @@
                     <p:submenu label="Operaciones">
                         <p:menuitem value="Mis Pedidos" outcome="/compras/mis_pedidos.xhtml" icon="pi pi-shopping-cart"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
+                        <p:menuitem value="Seguimiento" outcome="/compras/seguimiento_pedidos.xhtml" icon="pi pi-eye"
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Aprobaciones" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file-edit"

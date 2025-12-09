@@ -137,8 +137,18 @@ public class RequerimientoBean implements Serializable {
             try {
                 em.getTransaction().begin();
                 
-                if (requerimiento.getId() == null) {
+                boolean esNuevo = (requerimiento.getId() == null);
+                
+                if (esNuevo) {
                     em.persist(requerimiento); // Guarda cabecera y genera ID
+                    em.flush(); // Forzar generación del ID
+                    
+                    // Generar código: REQ-YYYYMM-XXXX (donde XXXX es el ID con padding)
+                    String codigo = String.format("REQ-%tY%<tm-%04d", 
+                        java.sql.Date.valueOf(requerimiento.getFechaSolicitud()), 
+                        requerimiento.getId());
+                    requerimiento.setCodigoReq(codigo);
+                    em.merge(requerimiento);
                 } else {
                     em.merge(requerimiento);
                 }
@@ -146,7 +156,11 @@ public class RequerimientoBean implements Serializable {
                 // Guardar detalles
                 for (DetalleRequerimiento det : detalles) {
                     det.setRequerimiento(requerimiento); // Asegurar vínculo
-                    em.persist(det);
+                    if (det.getId() == null) {
+                        em.persist(det);
+                    } else {
+                        em.merge(det);
+                    }
                 }
                 
                 em.getTransaction().commit();

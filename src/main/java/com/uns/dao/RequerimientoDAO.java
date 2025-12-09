@@ -113,4 +113,42 @@ public class RequerimientoDAO {
             em.close();
         }
     }
+
+    public List<Requerimiento> findByUsuarioConDetalles(Long idUsuario) {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<Requerimiento> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT DISTINCT r FROM Requerimiento r " +
+                "LEFT JOIN FETCH r.detalles d " +
+                "LEFT JOIN FETCH d.material m " +
+                "LEFT JOIN FETCH m.unidad " +
+                "LEFT JOIN FETCH m.grupo " +
+                "LEFT JOIN FETCH r.proyecto " +
+                "LEFT JOIN FETCH r.centroCosto " +
+                "WHERE r.usuarioSolicitante.id = :idUsuario ORDER BY r.fechaSolicitud DESC", 
+                Requerimiento.class)
+                .setParameter("idUsuario", idUsuario)
+                .getResultList();
+            
+            // Cargar relaciones opcionales manualmente para evitar MultipleBagFetchException
+            for (Requerimiento r : lista) {
+                if (r.getAreaNegocio() != null) {
+                    r.getAreaNegocio().getPrefijo(); // force load
+                }
+                if (r.getJefeAprobador() != null) {
+                    r.getJefeAprobador().getNombreCompleto(); // force load
+                }
+                if (r.getUsuarioSolicitante() != null) {
+                    r.getUsuarioSolicitante().getNombreCompleto(); // force load
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error en RequerimientoDAO.findByUsuarioConDetalles: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
 }
