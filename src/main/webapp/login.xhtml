@@ -3,97 +3,371 @@
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui">
 <h:head>
-    <title>Login - ACME</title>
+    <title>Iniciar Sesión - ACME Constructora</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            width: 380px;
-            text-align: center;
-        }
-
-        .login-container h2 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .login-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
             display: flex;
+        }
+
+        /* === LEFT PANEL - BRANDING === */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin: 0 auto 20px;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .login-icon i {
-            font-size: 2.5rem;
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .brand-content {
+            text-align: center;
+            color: white;
+            z-index: 1;
+        }
+
+        .brand-logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-logo i {
+            font-size: 3rem;
             color: white;
         }
 
-        .back-link {
+        .brand-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .brand-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 350px;
+            line-height: 1.6;
+        }
+
+        .brand-features {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-feature i {
+            font-size: 1.3rem;
+        }
+
+        .brand-feature span {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* === RIGHT PANEL - LOGIN === */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            background: #ffffff;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            margin-bottom: 40px;
+        }
+
+        .login-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
             display: block;
-            margin-top: 20px;
-            color: #667eea;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border-color: #10b981;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .login-footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .login-footer a {
+            color: #10b981;
             text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: #059669;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #9ca3af;
             font-size: 0.9rem;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+
+            .left-panel {
+                padding: 40px;
+                min-height: auto;
+            }
+
+            .brand-features {
+                display: none;
+            }
+
+            .right-panel {
+                padding: 40px 30px;
+            }
+        }
+
+        /* PrimeFaces Overrides */
+        .ui-inputfield {
+            width: 100% !important;
+            padding: 16px 16px 16px 50px !important;
+            border: 2px solid #e5e7eb !important;
+            border-radius: 12px !important;
+            font-size: 1rem !important;
+            font-family: inherit !important;
+            transition: all 0.3s !important;
+            background: #f9fafb !important;
+        }
+
+        .ui-inputfield:focus {
+            border-color: #10b981 !important;
+            background: white !important;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
+        }
+
+        .ui-password {
+            width: 100%;
         }
     </style>
 </h:head>
 <h:body>
-    <div class="login-container">
-        <div class="login-icon">
-            <i class="pi pi-lock"></i>
+    <!-- Left Panel - Branding -->
+    <div class="left-panel">
+        <div class="brand-content">
+            <div class="brand-logo">
+                <i class="pi pi-building"></i>
+            </div>
+            <h1>ACME Constructora</h1>
+            <p>Sistema integral de gestión de requerimientos y compras para tu empresa constructora.</p>
+
+            <div class="brand-features">
+                <div class="brand-feature">
+                    <i class="pi pi-check-circle"></i>
+                    <span>Gestión de Requerimientos</span>
+                </div>
+                <div class="brand-feature">
+                    <i class="pi pi-check-circle"></i>
+                    <span>Flujo de Aprobaciones</span>
+                </div>
+                <div class="brand-feature">
+                    <i class="pi pi-check-circle"></i>
+                    <span>Órdenes de Compra</span>
+                </div>
+            </div>
         </div>
-        <h2>Iniciar Sesión</h2>
+    </div>
 
-        <h:form>
-            <p:growl id="growl" showDetail="true" />
-
-            <div class="ui-fluid">
-                <div class="p-field" style="margin-bottom: 20px; text-align: left;">
-                    <p:outputLabel for="username" value="Usuario" style="font-weight: 600;" />
-                    <p:inputText id="username" value="#{loginBean.username}" required="true"
-                        placeholder="Ingrese su usuario" style="margin-top: 5px;" />
-                </div>
-
-                <div class="p-field" style="margin-bottom: 30px; text-align: left;">
-                    <p:outputLabel for="password" value="Contraseña" style="font-weight: 600;" />
-                    <p:password id="password" value="#{loginBean.password}" required="true" toggleMask="true"
-                        placeholder="Ingrese su contraseña" style="margin-top: 5px;" />
-                </div>
-
-                <p:commandButton value="Ingresar" action="#{loginBean.iniciarSesion}" update="growl"
-                    icon="pi pi-sign-in" styleClass="ui-button-primary ui-button-raised"
-                    style="width: 100%; padding: 12px; font-size: 1rem;" />
+    <!-- Right Panel - Login Form -->
+    <div class="right-panel">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Bienvenido</h2>
+                <p>Ingresa tus credenciales para acceder al sistema</p>
             </div>
 
-            <h:link outcome="/index.xhtml" styleClass="back-link">
-                <i class="pi pi-arrow-left" style="margin-right: 5px;"></i> Volver al inicio
-            </h:link>
-        </h:form>
+            <h:form>
+                <p:growl id="growl" showDetail="true" />
+
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <div class="input-wrapper">
+                        <i class="pi pi-user"></i>
+                        <p:inputText id="username" value="#{loginBean.username}" required="true"
+                            placeholder="Ingrese su usuario" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="pi pi-lock"></i>
+                        <p:password id="password" value="#{loginBean.password}" required="true" toggleMask="true"
+                            placeholder="Ingrese su contraseña" feedback="false" />
+                    </div>
+                </div>
+
+                <p:commandButton value="Iniciar Sesión" action="#{loginBean.iniciarSesion}" update="growl"
+                    icon="pi pi-sign-in" styleClass="btn-login" />
+
+                <div class="divider">
+                    <span>¿Necesitas ayuda?</span>
+                </div>
+
+                <div class="login-footer">
+                    <h:link outcome="/index.xhtml">
+                        <i class="pi pi-arrow-left"></i>
+                        Volver al inicio
+                    </h:link>
+                </div>
+            </h:form>
+        </div>
     </div>
 </h:body>
 

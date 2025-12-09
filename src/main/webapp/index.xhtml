@@ -4,7 +4,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
     xmlns:f="jakarta.faces.core">
 <h:head>
-    <title>ACME Constructor</title>
+    <title>ACME Constructora - Sistema de Gestión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
+        rel="stylesheet" />
     <style>
         * {
             box-sizing: border-box;
@@ -13,100 +15,513 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #ffffff;
+            color: #1f2937;
+            line-height: 1.6;
         }
 
+        /* === NAVIGATION === */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #10b981;
+        }
+
+        .btn-contact {
+            padding: 12px 28px;
+            background: transparent;
+            border: 2px solid #1f2937;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #1f2937;
+        }
+
+        .btn-contact:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        /* === HERO SECTION === */
         .hero {
-            flex: 1;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 120px 60px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px 20px;
-            color: white;
+            padding-right: 40px;
         }
 
         .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
         }
 
-        .hero p {
-            font-size: 1.4rem;
-            max-width: 600px;
-            margin-bottom: 40px;
-            opacity: 0.9;
+        .hero h1 .highlight {
+            color: #10b981;
         }
 
-        .features {
+        .hero h1 .outline {
+            color: transparent;
+            -webkit-text-stroke: 2px #1f2937;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 35px;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
             display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            padding: 16px 35px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            padding: 16px 35px;
+            background: transparent;
+            color: #1f2937;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        /* === HERO IMAGE SECTION === */
+        .hero-image {
+            position: relative;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            margin-bottom: 40px;
         }
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            border-radius: 15px;
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-image::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
             width: 200px;
-            text-align: center;
+            height: 200px;
+            background: #10b981;
+            border-radius: 50%;
+            opacity: 0.3;
         }
 
-        .feature-card i {
+        .main-image i {
+            font-size: 8rem;
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .accent-shape {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: #10b981;
+            border-radius: 20px;
+            bottom: -30px;
+            left: -30px;
+        }
+
+        .accent-shape-2 {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #1f2937;
+            border-radius: 50%;
+            top: 50px;
+            right: -40px;
+        }
+
+        .stats-card {
+            position: absolute;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stats-card.left {
+            bottom: 80px;
+            left: -60px;
+        }
+
+        .stats-card.right {
+            top: 30px;
+            right: -40px;
+        }
+
+        .stats-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .stats-content h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stats-content p {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* === FEATURES SECTION === */
+        .features {
+            padding: 80px 60px;
+            background: #f9fafb;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .features-header h2 {
             font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
-        .feature-card h3 {
+        .features-header p {
+            color: #6b7280;
             font-size: 1.1rem;
         }
 
-        .footer {
-            padding: 20px;
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 35px 25px;
+            border-radius: 15px;
             text-align: center;
-            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s;
+            border: 1px solid #e5e7eb;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .feature-card p {
             font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* === FOOTER === */
+        .footer {
+            padding: 40px 60px;
+            background: #1f2937;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-left .logo-icon {
+            background: #10b981;
+        }
+
+        .footer p {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 100px 30px 40px;
+            }
+
+            .hero-content {
+                padding-right: 0;
+                text-align: center;
+                align-items: center;
+            }
+
+            .hero-image {
+                margin-top: 50px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .navbar {
+                padding: 15px 30px;
+            }
+
+            .nav-links {
+                display: none;
+            }
         }
     </style>
 </h:head>
 <h:body>
-    <div class="hero">
-        <h1><i class="pi pi-building" style="margin-right: 15px;"></i>Sistema ACME</h1>
-        <p>Plataforma integral para la gestión de obras, requerimientos y compras de tu empresa constructora.</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="pi pi-building"></i>
+            </div>
+            <span>ACME</span>
+        </div>
+        <div class="nav-links">
+            <a href="#">Inicio</a>
+            <a href="#">Servicios</a>
+            <a href="#">Nosotros</a>
+            <a href="#">Proyectos</a>
+            <a href="login.xhtml" class="btn-contact">Ingresar</a>
+        </div>
+    </nav>
 
-        <div class="features">
-            <div class="feature-card">
-                <i class="pi pi-shopping-cart"></i>
-                <h3>Requerimientos</h3>
-            </div>
-            <div class="feature-card">
-                <i class="pi pi-check-circle"></i>
-                <h3>Aprobaciones</h3>
-            </div>
-            <div class="feature-card">
-                <i class="pi pi-file"></i>
-                <h3>Órdenes de Compra</h3>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                <span class="highlight">GESTIÓN</span> DE<br />
+                <span class="outline">PROYECTOS</span> Y<br />
+                COMPRAS
+            </h1>
+            <p class="hero-description">
+                Sistema integral para la administración de requerimientos, aprobaciones y órdenes de compra
+                de tu empresa constructora. Eficiencia y control en cada etapa.
+            </p>
+            <div class="hero-buttons">
+                <h:form>
+                    <p:button outcome="/login.xhtml" value="Ingresar al Sistema" styleClass="btn-primary" />
+                </h:form>
+                <a href="#features" class="btn-secondary">Conocer Más</a>
             </div>
         </div>
+        <div class="hero-image">
+            <div class="image-container">
+                <div class="main-image">
+                    <i class="pi pi-building"></i>
+                </div>
+                <div class="accent-shape"></div>
+                <div class="accent-shape-2"></div>
+                <div class="stats-card left">
+                    <div class="stats-icon">
+                        <i class="pi pi-chart-line"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h4>+500</h4>
+                        <p>Órdenes Procesadas</p>
+                    </div>
+                </div>
+                <div class="stats-card right">
+                    <div class="stats-icon">
+                        <i class="pi pi-check-circle"></i>
+                    </div>
+                    <div class="stats-content">
+                        <h4>99%</h4>
+                        <p>Eficiencia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <h:form>
-            <p:button value="Ingresar al Sistema" outcome="/login.xhtml" icon="pi pi-sign-in"
-                styleClass="ui-button-raised ui-button-rounded" style="font-size: 1.2rem; padding: 15px 40px;" />
-        </h:form>
-    </div>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="features-header">
+            <h2>Nuestras Funcionalidades</h2>
+            <p>Todo lo que necesitas para gestionar tu empresa constructora</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="pi pi-shopping-cart"></i>
+                </div>
+                <h3>Requerimientos</h3>
+                <p>Solicita materiales para tus obras de manera rápida y organizada.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="pi pi-check-circle"></i>
+                </div>
+                <h3>Aprobaciones</h3>
+                <p>Flujo de aprobación jerárquico con notificaciones en tiempo real.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="pi pi-file-edit"></i>
+                </div>
+                <h3>Órdenes de Compra</h3>
+                <p>Genera órdenes agrupando items de múltiples requerimientos.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="pi pi-chart-bar"></i>
+                </div>
+                <h3>Seguimiento</h3>
+                <p>Monitorea el avance de cada solicitud hasta su atención completa.</p>
+            </div>
+        </div>
+    </section>
 
-    <div class="footer">
-        © 2024 ACME Constructor. Todos los derechos reservados.
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-left">
+            <div class="logo-icon">
+                <i class="pi pi-building"></i>
+            </div>
+            <span style="font-weight: 700; font-size: 1.2rem;">ACME Constructora</span>
+        </div>
+        <p>© 2024 ACME Constructora. Todos los derechos reservados.</p>
+    </footer>
 </h:body>
 
 </html>
