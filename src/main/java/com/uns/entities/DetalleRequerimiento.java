@@ -53,6 +53,17 @@ public class DetalleRequerimiento implements Serializable {
         return cantidadSolicitada.subtract(atendida);
     }
 
+    /** Porcentaje de atención para este item */
+    public double getPorcentajeAtencion() {
+        if (cantidadSolicitada == null || cantidadSolicitada.compareTo(BigDecimal.ZERO) == 0) {
+            return 0.0;
+        }
+        BigDecimal atendida = cantidadAtendida != null ? cantidadAtendida : BigDecimal.ZERO;
+        return atendida.multiply(new BigDecimal("100"))
+            .divide(cantidadSolicitada, 2, java.math.RoundingMode.HALF_UP)
+            .doubleValue();
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

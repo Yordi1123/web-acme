@@ -1,12 +1,15 @@
 package com.uns.controller;
 
+import com.uns.dao.DetalleRequerimientoDAO;
 import com.uns.dao.RequerimientoDAO;
+import com.uns.entities.DetalleRequerimiento;
 import com.uns.entities.Requerimiento;
 import com.uns.enums.EstadoRequerimiento;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import java.util.List;
@@ -15,19 +18,39 @@ import java.util.List;
 @ViewScoped
 public class AprobacionBean implements Serializable {
 
+    @Inject
+    private LoginBean loginBean;
+
     private RequerimientoDAO requerimientoDAO;
+    private DetalleRequerimientoDAO detalleRequerimientoDAO;
+    
     private List<Requerimiento> requerimientosPendientes;
     private Requerimiento requerimientoSeleccionado;
+    private List<DetalleRequerimiento> detallesSeleccionados;
     private String observacionAprobador;
 
     @PostConstruct
     public void init() {
         requerimientoDAO = new RequerimientoDAO();
+        detalleRequerimientoDAO = new DetalleRequerimientoDAO();
         cargarPendientes();
     }
 
     public void cargarPendientes() {
-        requerimientosPendientes = requerimientoDAO.findPendientes();
+        if (loginBean != null && loginBean.isLoggedIn()) {
+            // Filtrar por jefe logueado
+            requerimientosPendientes = requerimientoDAO.findPendientesByJefe(
+                loginBean.getUsuarioLogueado().getId());
+        } else {
+            requerimientosPendientes = new java.util.ArrayList<>();
+        }
+    }
+
+    public void seleccionar(Requerimiento req) {
+        this.requerimientoSeleccionado = req;
+        this.observacionAprobador = null;
+        // Cargar detalles frescos
+        this.detallesSeleccionados = detalleRequerimientoDAO.findByRequerimientoConMaterial(req.getId());
     }
 
     public void aprobar(Requerimiento req) {
@@ -47,11 +70,11 @@ public class AprobacionBean implements Serializable {
             return;
         }
         req.setEstado(EstadoRequerimiento.OBSERVADO);
-        // Append observation to existing one
         String obsExistente = req.getObservacion() != null ? req.getObservacion() + "\n" : "";
         req.setObservacion(obsExistente + "[OBSERVADO] " + observacionAprobador);
         requerimientoDAO.update(req);
         observacionAprobador = null;
+        requerimientoSeleccionado = null;
         cargarPendientes();
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_INFO, "Observado", 
@@ -75,20 +98,15 @@ public class AprobacionBean implements Serializable {
             return;
         }
         req.setEstado(EstadoRequerimiento.RECHAZADO);
-        // Agregar observación del rechazo
         String obsExistente = req.getObservacion() != null ? req.getObservacion() + "\n" : "";
         req.setObservacion(obsExistente + "[RECHAZADO] " + observacionAprobador);
         requerimientoDAO.update(req);
         observacionAprobador = null;
+        requerimientoSeleccionado = null;
         cargarPendientes();
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado", 
                 "Requerimiento #" + req.getId() + " rechazado con observación"));
-    }
-
-    public void seleccionar(Requerimiento req) {
-        this.requerimientoSeleccionado = req;
-        this.observacionAprobador = null;
     }
 
     // --- Getters y Setters ---
@@ -97,6 +115,8 @@ public class AprobacionBean implements Serializable {
 
     public Requerimiento getRequerimientoSeleccionado() { return requerimientoSeleccionado; }
     public void setRequerimientoSeleccionado(Requerimiento r) { this.requerimientoSeleccionado = r; }
+
+    public List<DetalleRequerimiento> getDetallesSeleccionados() { return detallesSeleccionados; }
 
     public String getObservacionAprobador() { return observacionAprobador; }
     public void setObservacionAprobador(String o) { this.observacionAprobador = o; }

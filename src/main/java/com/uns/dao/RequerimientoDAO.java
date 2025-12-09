@@ -151,4 +151,67 @@ public class RequerimientoDAO {
         }
         return lista;
     }
+
+    /**
+     * Encuentra requerimientos PENDIENTES asignados a un jefe específico.
+     */
+    public List<Requerimiento> findPendientesByJefe(Long idJefe) {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<Requerimiento> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT DISTINCT r FROM Requerimiento r " +
+                "LEFT JOIN FETCH r.detalles d " +
+                "LEFT JOIN FETCH d.material m " +
+                "LEFT JOIN FETCH m.unidad " +
+                "LEFT JOIN FETCH r.usuarioSolicitante " +
+                "LEFT JOIN FETCH r.proyecto " +
+                "WHERE r.estado = :estado AND r.jefeAprobador.id = :idJefe " +
+                "ORDER BY r.fechaSolicitud DESC", 
+                Requerimiento.class)
+                .setParameter("estado", com.uns.enums.EstadoRequerimiento.PENDIENTE)
+                .setParameter("idJefe", idJefe)
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en RequerimientoDAO.findPendientesByJefe: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
+
+    /**
+     * Encuentra requerimientos aprobados por un jefe específico (para seguimiento).
+     * Incluye estados: APROBADO, EN_ATENCION, ATENDIDO_TOTAL
+     */
+    public List<Requerimiento> findAprobadosByJefe(Long idJefe) {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<Requerimiento> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT DISTINCT r FROM Requerimiento r " +
+                "LEFT JOIN FETCH r.detalles d " +
+                "LEFT JOIN FETCH d.material m " +
+                "LEFT JOIN FETCH m.unidad " +
+                "LEFT JOIN FETCH r.usuarioSolicitante " +
+                "LEFT JOIN FETCH r.proyecto " +
+                "WHERE r.jefeAprobador.id = :idJefe " +
+                "AND r.estado IN (:estados) " +
+                "ORDER BY r.fechaSolicitud DESC", 
+                Requerimiento.class)
+                .setParameter("idJefe", idJefe)
+                .setParameter("estados", java.util.Arrays.asList(
+                    com.uns.enums.EstadoRequerimiento.APROBADO,
+                    com.uns.enums.EstadoRequerimiento.EN_ATENCION,
+                    com.uns.enums.EstadoRequerimiento.ATENDIDO_TOTAL))
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en RequerimientoDAO.findAprobadosByJefe: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
 }

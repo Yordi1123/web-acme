@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewAction action="#{loginBean.verificarSesion}" />
+        </f:metadata>
+
+        <h:form id="formSeguimiento">
+            <div class="p-grid">
+                <div class="p-col-12">
+                    <h1 style="margin-bottom: 10px;">
+                        <i class="pi pi-chart-line" style="margin-right: 10px;"></i>
+                        Seguimiento de Requerimientos Aprobados
+                    </h1>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Monitorea el estado de los requerimientos que has aprobado.
+                    </p>
+                </div>
+
+                <div class="p-col-12">
+                    <p:dataTable id="tablaRequerimientos" value="#{seguimientoJefeBean.requerimientos}" var="req"
+                        emptyMessage="No hay requerimientos aprobados" styleClass="ui-datatable-hoverable-rows"
+                        paginator="true" rows="10">
+
+                        <p:column headerText="Código" style="width: 120px;">
+                            <h:outputText value="#{req.codigoReq}" />
+                        </p:column>
+
+                        <p:column headerText="Fecha">
+                            <h:outputText value="#{req.fechaSolicitud}" />
+                        </p:column>
+
+                        <p:column headerText="Solicitante">
+                            <h:outputText value="#{req.usuarioSolicitante.nombreCompleto}" />
+                        </p:column>
+
+                        <p:column headerText="Proyecto">
+                            <h:outputText value="#{req.proyecto.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Estado">
+                            <p:badge value="#{req.estado}"
+                                severity="#{req.estado eq 'APROBADO' ? 'info' : (req.estado eq 'EN_ATENCION' ? 'warning' : 'success')}" />
+                        </p:column>
+
+                        <p:column headerText="% Atención" style="width: 180px;">
+                            <p:progressBar value="#{req.porcentajeAtencion}" labelTemplate="#{req.porcentajeAtencion}%"
+                                style="height: 20px;" />
+                        </p:column>
+
+                        <p:column headerText="Acciones" style="width: 80px; text-align: center;">
+                            <p:commandButton icon="pi pi-eye" styleClass="ui-button-info ui-button-rounded"
+                                title="Ver Detalle" update=":formSeguimiento:dialogDetalle"
+                                oncomplete="PF('dlgDetalle').show()">
+                                <f:actionListener binding="#{seguimientoJefeBean.seleccionar(req)}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+
+            <!-- Diálogo de Detalle -->
+            <p:dialog id="dialogDetalle" header="Detalle del Requerimiento" widgetVar="dlgDetalle" modal="true"
+                responsive="true" width="850" closable="true">
+
+                <p:outputPanel id="panelDetalle" rendered="#{seguimientoJefeBean.requerimientoSeleccionado != null}">
+                    <div class="p-grid" style="margin-bottom: 20px;">
+                        <div class="p-col-4">
+                            <strong>Código:</strong> #{seguimientoJefeBean.requerimientoSeleccionado.codigoReq}
+                        </div>
+                        <div class="p-col-4">
+                            <strong>Fecha:</strong> #{seguimientoJefeBean.requerimientoSeleccionado.fechaSolicitud}
+                        </div>
+                        <div class="p-col-4">
+                            <strong>Estado:</strong>
+                            <p:badge value="#{seguimientoJefeBean.requerimientoSeleccionado.estado}" />
+                        </div>
+                        <div class="p-col-6">
+                            <strong>Solicitante:</strong>
+                            #{seguimientoJefeBean.requerimientoSeleccionado.usuarioSolicitante.nombreCompleto}
+                        </div>
+                        <div class="p-col-6">
+                            <strong>Proyecto:</strong> #{seguimientoJefeBean.requerimientoSeleccionado.proyecto.nombre}
+                        </div>
+                    </div>
+
+                    <p:dataTable value="#{seguimientoJefeBean.detallesSeleccionados}" var="det"
+                        emptyMessage="No hay items">
+                        <p:column headerText="Material">
+                            <h:outputText value="#{det.material.nombre}" />
+                        </p:column>
+                        <p:column headerText="Unidad" style="width: 80px;">
+                            <h:outputText value="#{det.material.unidad.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Solicitado" style="width: 100px; text-align: right;">
+                            <h:outputText value="#{det.cantidadSolicitada}" />
+                        </p:column>
+                        <p:column headerText="Atendido" style="width: 100px; text-align: right;">
+                            <h:outputText value="#{det.cantidadAtendida != null ? det.cantidadAtendida : 0}" />
+                        </p:column>
+                        <p:column headerText="% Avance" style="width: 120px;">
+                            <p:progressBar value="#{det.porcentajeAtencion}" labelTemplate="#{det.porcentajeAtencion}%"
+                                style="height: 16px;" />
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewAction action="#{loginBean.verificarSesion}" />
+        </f:metadata>
+
+        <h:form id="formAprobacion">
+            <div class="p-grid">
+                <div class="p-col-12">
+                    <h1 style="margin-bottom: 10px;">
+                        <i class="pi pi-check-circle" style="margin-right: 10px;"></i>
+                        Aprobación de Requerimientos
+                    </h1>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        Revisa y aprueba los requerimientos pendientes de tu área.
+                    </p>
+                </div>
+
+                <div class="p-col-12">
+                    <p:dataTable id="tablaRequerimientos" value="#{aprobacionBean.requerimientosPendientes}" var="req"
+                        emptyMessage="No hay requerimientos pendientes de aprobación"
+                        styleClass="ui-datatable-hoverable-rows" paginator="true" rows="10">
+
+                        <p:column headerText="Código" style="width: 120px;">
+                            <h:outputText value="#{req.codigoReq}" />
+                        </p:column>
+
+                        <p:column headerText="Fecha">
+                            <h:outputText value="#{req.fechaSolicitud}" />
+                        </p:column>
+
+                        <p:column headerText="Solicitante">
+                            <h:outputText value="#{req.usuarioSolicitante.nombreCompleto}" />
+                        </p:column>
+
+                        <p:column headerText="Proyecto">
+                            <h:outputText value="#{req.proyecto.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Items">
+                            <p:badge value="#{req.detalles.size()}" severity="info" />
+                        </p:column>
+
+                        <p:column headerText="Acciones" style="width: 280px; text-align: center;">
+                            <p:commandButton icon="pi pi-eye" styleClass="ui-button-info ui-button-rounded"
+                                title="Ver Detalle" update=":formAprobacion:dialogDetalle"
+                                oncomplete="PF('dlgDetalle').show()">
+                                <f:actionListener binding="#{aprobacionBean.seleccionar(req)}" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-check" styleClass="ui-button-success ui-button-rounded"
+                                style="margin-left: 5px;" title="Aprobar" action="#{aprobacionBean.aprobar(req)}"
+                                update="tablaRequerimientos"
+                                onclick="return confirm('¿Confirma aprobar este requerimiento?');">
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-exclamation-triangle"
+                                styleClass="ui-button-warning ui-button-rounded" style="margin-left: 5px;"
+                                title="Observar" update=":formAprobacion:dialogObservacion"
+                                oncomplete="PF('dlgObservacion').show()">
+                                <f:actionListener binding="#{aprobacionBean.seleccionar(req)}" />
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-times" styleClass="ui-button-danger ui-button-rounded"
+                                style="margin-left: 5px;" title="Rechazar" action="#{aprobacionBean.rechazar(req)}"
+                                update="tablaRequerimientos"
+                                onclick="return confirm('¿Confirma rechazar este requerimiento?');">
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+
+            <!-- Diálogo de Detalle -->
+            <p:dialog id="dialogDetalle" header="Detalle del Requerimiento" widgetVar="dlgDetalle" modal="true"
+                responsive="true" width="800" closable="true">
+
+                <p:outputPanel id="panelDetalle" rendered="#{aprobacionBean.requerimientoSeleccionado != null}">
+                    <div class="p-grid" style="margin-bottom: 20px;">
+                        <div class="p-col-6">
+                            <strong>Código:</strong> #{aprobacionBean.requerimientoSeleccionado.codigoReq}
+                        </div>
+                        <div class="p-col-6">
+                            <strong>Fecha:</strong> #{aprobacionBean.requerimientoSeleccionado.fechaSolicitud}
+                        </div>
+                        <div class="p-col-6">
+                            <strong>Solicitante:</strong>
+                            #{aprobacionBean.requerimientoSeleccionado.usuarioSolicitante.nombreCompleto}
+                        </div>
+                        <div class="p-col-6">
+                            <strong>Proyecto:</strong> #{aprobacionBean.requerimientoSeleccionado.proyecto.nombre}
+                        </div>
+                        <div class="p-col-12"
+                            rendered="#{not empty aprobacionBean.requerimientoSeleccionado.observacion}">
+                            <strong>Observaciones:</strong><br />
+                            <h:outputText value="#{aprobacionBean.requerimientoSeleccionado.observacion}" escape="false"
+                                style="white-space: pre-wrap;" />
+                        </div>
+                    </div>
+
+                    <p:dataTable value="#{aprobacionBean.detallesSeleccionados}" var="det" emptyMessage="No hay items">
+                        <p:column headerText="Material">
+                            <h:outputText value="#{det.material.nombre}" />
+                        </p:column>
+                        <p:column headerText="Unidad" style="width: 100px;">
+                            <h:outputText value="#{det.material.unidad.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Cantidad" style="width: 100px; text-align: right;">
+                            <h:outputText value="#{det.cantidadSolicitada}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
+            </p:dialog>
+
+            <!-- Diálogo de Observación -->
+            <p:dialog id="dialogObservacion" header="Agregar Observación" widgetVar="dlgObservacion" modal="true"
+                responsive="true" width="500" closable="true">
+
+                <p:outputPanel id="panelObservacion">
+                    <div class="p-field" style="margin-bottom: 20px;">
+                        <label for="txtObservacion">Ingrese su observación:</label>
+                        <p:inputTextarea id="txtObservacion" value="#{aprobacionBean.observacionAprobador}" rows="4"
+                            style="width: 100%; margin-top: 10px;" required="true"
+                            requiredMessage="Debe ingresar una observación" />
+                    </div>
+
+                    <div style="text-align: right;">
+                        <p:commandButton value="Observar y Devolver" icon="pi pi-exclamation-triangle"
+                            styleClass="ui-button-warning"
+                            action="#{aprobacionBean.observar(aprobacionBean.requerimientoSeleccionado)}"
+                            update=":formAprobacion:tablaRequerimientos :formAprobacion:panelObservacion"
+                            oncomplete="if(!args.validationFailed) PF('dlgObservacion').hide();" />
+
+                        <p:commandButton value="Rechazar" icon="pi pi-times" styleClass="ui-button-danger"
+                            style="margin-left: 10px;"
+                            action="#{aprobacionBean.rechazarConObservacion(aprobacionBean.requerimientoSeleccionado)}"
+                            update=":formAprobacion:tablaRequerimientos :formAprobacion:panelObservacion"
+                            oncomplete="if(!args.validationFailed) PF('dlgObservacion').hide();" />
+                    </div>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

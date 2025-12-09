@@ -14,18 +14,18 @@
                 </h1>
                 <p style="color: #666; margin-bottom: 30px;">
                     Bienvenido, <strong>#{loginBean.usuarioLogueado.nombreCompleto}</strong>.
-                    Gestiona las aprobaciones y configuraciones del sistema.
+                    Gestiona las aprobaciones y seguimiento de requerimientos.
                 </p>
             </div>
 
             <div class="p-col-12 p-md-4">
                 <p:card>
                     <f:facet name="title">
-                        <i class="pi pi-check-circle" style="margin-right: 8px;"></i> Aprobaciones
+                        <i class="pi pi-check-circle" style="margin-right: 8px;"></i> Aprobaciones Pendientes
                     </f:facet>
-                    <p>Revisa y aprueba los requerimientos pendientes de tu equipo.</p>
+                    <p>Revisa y aprueba los requerimientos pendientes de tu área.</p>
                     <f:facet name="footer">
-                        <p:button value="Aprobar" outcome="/compras/aprobacion.xhtml" icon="pi pi-arrow-right"
+                        <p:button value="Aprobar" outcome="/jefe/aprobacion.xhtml" icon="pi pi-arrow-right"
                             styleClass="ui-button-success" />
                     </f:facet>
                 </p:card>
@@ -34,12 +34,12 @@
             <div class="p-col-12 p-md-4">
                 <p:card>
                     <f:facet name="title">
-                        <i class="pi pi-building" style="margin-right: 8px;"></i> Proyectos
+                        <i class="pi pi-chart-line" style="margin-right: 8px;"></i> Seguimiento
                     </f:facet>
-                    <p>Administra los proyectos activos de la empresa.</p>
+                    <p>Monitorea el avance de los requerimientos que has aprobado.</p>
                     <f:facet name="footer">
-                        <p:button value="Gestionar" outcome="/maestros/proyectos.xhtml" icon="pi pi-cog"
-                            styleClass="ui-button-outlined" />
+                        <p:button value="Ver Seguimiento" outcome="/jefe/seguimiento.xhtml" icon="pi pi-eye"
+                            styleClass="ui-button-info" />
                     </f:facet>
                 </p:card>
             </div>
@@ -47,12 +47,14 @@
             <div class="p-col-12 p-md-4">
                 <p:card>
                     <f:facet name="title">
-                        <i class="pi pi-chart-bar" style="margin-right: 8px;"></i> Reportes
+                        <i class="pi pi-user" style="margin-right: 8px;"></i> Mi Perfil
                     </f:facet>
-                    <p>Consulta el historial de órdenes de compra generadas.</p>
+                    <p>Área: #{loginBean.usuarioLogueado.areaNegocio.nombre}</p>
                     <f:facet name="footer">
-                        <p:button value="Ver Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-eye"
-                            styleClass="ui-button-info ui-button-outlined" />
+                        <h:form>
+                            <p:commandButton value="Cerrar Sesión" action="#{loginBean.cerrarSesion}"
+                                icon="pi pi-sign-out" styleClass="ui-button-secondary ui-button-outlined" />
+                        </h:form>
                     </f:facet>
                 </p:card>
             </div>
