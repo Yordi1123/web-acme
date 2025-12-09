@@ -20,15 +20,22 @@
 
                 <div class="p-col-12">
                     <p:dataTable id="tablaRequerimientos" value="#{aprobacionBean.requerimientosPendientes}" var="req"
-                        emptyMessage="No hay requerimientos pendientes de aprobación"
+                        rowKey="#{req.id}" emptyMessage="No hay requerimientos pendientes de aprobación"
                         styleClass="ui-datatable-hoverable-rows" paginator="true" rows="10">
 
-                        <p:column headerText="Código" style="width: 120px;">
-                            <h:outputText value="#{req.codigoReq}" />
+                        <!-- Columna de expansión para ver detalles -->
+                        <p:column style="width: 40px; text-align: center;">
+                            <p:rowToggler />
                         </p:column>
 
-                        <p:column headerText="Fecha">
-                            <h:outputText value="#{req.fechaSolicitud}" />
+                        <p:column headerText="Código" style="width: 130px;">
+                            <h:outputText value="#{req.codigoReq}" style="font-weight: bold; color: #3b82f6;" />
+                        </p:column>
+
+                        <p:column headerText="Fecha" style="width: 100px;">
+                            <h:outputText value="#{req.fechaSolicitud}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                            </h:outputText>
                         </p:column>
 
                         <p:column headerText="Solicitante">
@@ -39,105 +46,118 @@
                             <h:outputText value="#{req.proyecto.nombre}" />
                         </p:column>
 
-                        <p:column headerText="Items">
+                        <p:column headerText="Items" style="width: 70px; text-align: center;">
                             <p:badge value="#{req.detalles.size()}" severity="info" />
                         </p:column>
 
-                        <p:column headerText="Acciones" style="width: 280px; text-align: center;">
-                            <p:commandButton icon="pi pi-eye" styleClass="ui-button-info ui-button-rounded"
-                                title="Ver Detalle" update=":formAprobacion:dialogDetalle"
-                                oncomplete="PF('dlgDetalle').show()">
-                                <f:actionListener binding="#{aprobacionBean.seleccionar(req)}" />
-                            </p:commandButton>
-
+                        <p:column headerText="Acciones" style="width: 200px; text-align: center;">
+                            <!-- Aprobar directamente - sin observación requerida -->
                             <p:commandButton icon="pi pi-check" styleClass="ui-button-success ui-button-rounded"
-                                style="margin-left: 5px;" title="Aprobar" action="#{aprobacionBean.aprobar(req)}"
-                                update="tablaRequerimientos"
-                                onclick="return confirm('¿Confirma aprobar este requerimiento?');">
+                                title="Aprobar" action="#{aprobacionBean.aprobar(req)}"
+                                update="tablaRequerimientos :msgs">
+                                <p:confirm header="Confirmar Aprobación"
+                                    message="¿Confirma aprobar este requerimiento? Se enviará al departamento de Compras."
+                                    icon="pi pi-check-circle" />
                             </p:commandButton>
 
+                            <!-- Observar - abre diálogo para ingresar observación -->
                             <p:commandButton icon="pi pi-exclamation-triangle"
-                                styleClass="ui-button-warning ui-button-rounded" style="margin-left: 5px;"
-                                title="Observar" update=":formAprobacion:dialogObservacion"
+                                styleClass="ui-button-warning ui-button-rounded" style="margin-left: 8px;"
+                                title="Observar y Devolver" update=":formAprobacion:dialogObservacion"
                                 oncomplete="PF('dlgObservacion').show()">
                                 <f:actionListener binding="#{aprobacionBean.seleccionar(req)}" />
                             </p:commandButton>
 
+                            <!-- Rechazar definitivamente -->
                             <p:commandButton icon="pi pi-times" styleClass="ui-button-danger ui-button-rounded"
-                                style="margin-left: 5px;" title="Rechazar" action="#{aprobacionBean.rechazar(req)}"
-                                update="tablaRequerimientos"
-                                onclick="return confirm('¿Confirma rechazar este requerimiento?');">
+                                style="margin-left: 8px;" title="Rechazar Definitivamente"
+                                action="#{aprobacionBean.rechazar(req)}" update="tablaRequerimientos :msgs">
+                                <p:confirm header="Confirmar Rechazo"
+                                    message="¿Confirma RECHAZAR definitivamente este requerimiento? Esta acción no se puede deshacer."
+                                    icon="pi pi-exclamation-triangle" />
                             </p:commandButton>
                         </p:column>
+
+                        <!-- Row Expansion: Detalle de materiales -->
+                        <p:rowExpansion>
+                            <div style="padding: 15px; background: #f8fafc;">
+                                <div
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                                    <div>
+                                        <strong>Área:</strong> #{req.areaNegocio.nombre}<br />
+                                        <strong>Centro Costo:</strong> #{req.centroCosto.codigo} -
+                                        #{req.centroCosto.nombre}<br />
+                                        <strong>Etapa:</strong> #{req.etapa}
+                                    </div>
+                                    <div style="#{not empty req.observacion ? '' : 'display: none;'}">
+                                        <strong style="color: #f59e0b;">Observaciones anteriores:</strong><br />
+                                        <h:outputText value="#{req.observacion}"
+                                            style="white-space: pre-wrap; color: #666;" />
+                                    </div>
+                                </div>
+
+                                <h4 style="margin: 0 0 10px 0; color: #3b82f6;">
+                                    <i class="pi pi-list"></i> Materiales Solicitados (#{req.detalles.size()} items)
+                                </h4>
+                                <p:dataTable value="#{req.detalles}" var="det" stripedRows="true" size="small">
+                                    <p:column headerText="#" style="width: 40px;">
+                                        <h:outputText value="#{det_rowIndex + 1}" />
+                                    </p:column>
+                                    <p:column headerText="Material">
+                                        <h:outputText value="#{det.material.nombre}" style="font-weight: 500;" />
+                                    </p:column>
+                                    <p:column headerText="Grupo" style="width: 120px;">
+                                        <h:outputText value="#{det.material.grupo.nombre}" />
+                                    </p:column>
+                                    <p:column headerText="Unidad" style="width: 80px;">
+                                        <h:outputText value="#{det.material.unidad.abreviatura}" />
+                                    </p:column>
+                                    <p:column headerText="Cantidad" style="width: 100px; text-align: right;">
+                                        <h:outputText value="#{det.cantidadSolicitada}">
+                                            <f:convertNumber minFractionDigits="2" />
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
+                        </p:rowExpansion>
                     </p:dataTable>
                 </div>
             </div>
 
-            <!-- Diálogo de Detalle -->
-            <p:dialog id="dialogDetalle" header="Detalle del Requerimiento" widgetVar="dlgDetalle" modal="true"
-                responsive="true" width="800" closable="true">
-
-                <p:outputPanel id="panelDetalle" rendered="#{aprobacionBean.requerimientoSeleccionado != null}">
-                    <div class="p-grid" style="margin-bottom: 20px;">
-                        <div class="p-col-6">
-                            <strong>Código:</strong> #{aprobacionBean.requerimientoSeleccionado.codigoReq}
-                        </div>
-                        <div class="p-col-6">
-                            <strong>Fecha:</strong> #{aprobacionBean.requerimientoSeleccionado.fechaSolicitud}
-                        </div>
-                        <div class="p-col-6">
-                            <strong>Solicitante:</strong>
-                            #{aprobacionBean.requerimientoSeleccionado.usuarioSolicitante.nombreCompleto}
-                        </div>
-                        <div class="p-col-6">
-                            <strong>Proyecto:</strong> #{aprobacionBean.requerimientoSeleccionado.proyecto.nombre}
-                        </div>
-                        <div class="p-col-12"
-                            rendered="#{not empty aprobacionBean.requerimientoSeleccionado.observacion}">
-                            <strong>Observaciones:</strong><br />
-                            <h:outputText value="#{aprobacionBean.requerimientoSeleccionado.observacion}" escape="false"
-                                style="white-space: pre-wrap;" />
-                        </div>
-                    </div>
-
-                    <p:dataTable value="#{aprobacionBean.detallesSeleccionados}" var="det" emptyMessage="No hay items">
-                        <p:column headerText="Material">
-                            <h:outputText value="#{det.material.nombre}" />
-                        </p:column>
-                        <p:column headerText="Unidad" style="width: 100px;">
-                            <h:outputText value="#{det.material.unidad.abreviatura}" />
-                        </p:column>
-                        <p:column headerText="Cantidad" style="width: 100px; text-align: right;">
-                            <h:outputText value="#{det.cantidadSolicitada}" />
-                        </p:column>
-                    </p:dataTable>
-                </p:outputPanel>
-            </p:dialog>
+            <!-- Confirm Dialog Global -->
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sí, Confirmar" type="button" styleClass="ui-confirmdialog-yes"
+                    icon="pi pi-check" />
+                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                    icon="pi pi-times" />
+            </p:confirmDialog>
 
             <!-- Diálogo de Observación -->
-            <p:dialog id="dialogObservacion" header="Agregar Observación" widgetVar="dlgObservacion" modal="true"
-                responsive="true" width="500" closable="true">
+            <p:dialog id="dialogObservacion" header="Observar y Devolver al Solicitante" widgetVar="dlgObservacion"
+                modal="true" responsive="true" width="500" closable="true">
 
-                <p:outputPanel id="panelObservacion">
+                <p:outputPanel id="panelObservacion" rendered="#{aprobacionBean.requerimientoSeleccionado != null}">
+                    <p style="color: #666; margin-bottom: 15px;">
+                        Requerimiento: <strong>#{aprobacionBean.requerimientoSeleccionado.codigoReq}</strong><br />
+                        Solicitante: #{aprobacionBean.requerimientoSeleccionado.usuarioSolicitante.nombreCompleto}
+                    </p>
+
                     <div class="p-field" style="margin-bottom: 20px;">
-                        <label for="txtObservacion">Ingrese su observación:</label>
+                        <label for="txtObservacion" style="font-weight: 500;">Ingrese su observación:</label>
                         <p:inputTextarea id="txtObservacion" value="#{aprobacionBean.observacionAprobador}" rows="4"
-                            style="width: 100%; margin-top: 10px;" required="true"
-                            requiredMessage="Debe ingresar una observación" />
+                            style="width: 100%; margin-top: 10px;"
+                            placeholder="Describa qué correcciones debe realizar el solicitante..." />
                     </div>
 
                     <div style="text-align: right;">
-                        <p:commandButton value="Observar y Devolver" icon="pi pi-exclamation-triangle"
+                        <p:commandButton value="Devolver con Observación" icon="pi pi-undo"
                             styleClass="ui-button-warning"
                             action="#{aprobacionBean.observar(aprobacionBean.requerimientoSeleccionado)}"
-                            update=":formAprobacion:tablaRequerimientos :formAprobacion:panelObservacion"
+                            update=":formAprobacion:tablaRequerimientos :formAprobacion:panelObservacion :msgs"
                             oncomplete="if(!args.validationFailed) PF('dlgObservacion').hide();" />
 
-                        <p:commandButton value="Rechazar" icon="pi pi-times" styleClass="ui-button-danger"
-                            style="margin-left: 10px;"
-                            action="#{aprobacionBean.rechazarConObservacion(aprobacionBean.requerimientoSeleccionado)}"
-                            update=":formAprobacion:tablaRequerimientos :formAprobacion:panelObservacion"
-                            oncomplete="if(!args.validationFailed) PF('dlgObservacion').hide();" />
+                        <p:commandButton value="Cancelar" icon="pi pi-times" styleClass="ui-button-secondary"
+                            style="margin-left: 10px;" type="button" onclick="PF('dlgObservacion').hide();" />
                     </div>
                 </p:outputPanel>
             </p:dialog>
