@@ -238,7 +238,8 @@ INSERT INTO `area_negocio` (`id`, `prefijo`, `nombre`, `id_jefe`, `estado`) VALU
 -- DATOS: usuarios (Jefes, Encargados, Empleados Compras)
 -- ============================================================
 INSERT INTO `usuario` (`id`, `username`, `password`, `nombre_completo`, `cargo`, `estado`, `id_area_negocio`) VALUES
-	(1, 'miguel.angulo', '1234', 'Miguel Angulo Rios', 'JEFE_AREA', 'Activo', 1),
+	-- JEFES DE AREA
+  (1, 'miguel.angulo', '1234', 'Miguel Angulo Rios', 'JEFE_AREA', 'Activo', 1),
 	(2, 'ana.lopez', '1234', 'Ana Lopez Gutierrez', 'JEFE_AREA', 'Activo', 2),
 	(3, 'luis.martinez', '1234', 'Luis Martinez Perez', 'JEFE_AREA', 'Activo', 3),
 	(4, 'eva.perez', '1234', 'Eva Perez Sanchez', 'JEFE_AREA', 'Activo', 4),
