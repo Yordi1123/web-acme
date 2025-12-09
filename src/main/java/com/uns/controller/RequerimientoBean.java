@@ -64,7 +64,7 @@ public class RequerimientoBean implements Serializable {
     
     public void cargarMisRequerimientos() {
         if (loginBean != null && loginBean.isLoggedIn()) {
-            requerimientos = requerimientoDAO.findByUsuario(loginBean.getUsuarioLogueado().getId());
+            requerimientos = requerimientoDAO.findByUsuarioConDetalles(loginBean.getUsuarioLogueado().getId());
         } else {
             requerimientos = new java.util.ArrayList<>();
         }
