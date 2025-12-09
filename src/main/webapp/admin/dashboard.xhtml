@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <f:metadata>
+            <f:viewAction action="#{loginBean.verificarSesion}" />
+        </f:metadata>
+
+        <div class="p-grid">
+            <div class="p-col-12">
+                <h1 style="margin-bottom: 10px;">
+                    <i class="pi pi-shield" style="margin-right: 10px; color: #f59e0b;"></i>
+                    Panel de Administrador
+                </h1>
+                <p style="color: #666; margin-bottom: 30px;">
+                    Bienvenido, <strong>#{loginBean.usuarioLogueado.nombreCompleto}</strong>.
+                    Tienes acceso completo al sistema.
+                </p>
+            </div>
+
+            <!-- Fila 1: Gestión de Usuarios y Configuración -->
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-users" style="margin-right: 8px; color: #3b82f6;"></i> Usuarios
+                    </f:facet>
+                    <p>Gestiona las cuentas de usuario, roles y estados.</p>
+                    <f:facet name="footer">
+                        <p:button value="Gestionar Usuarios" outcome="/maestros/usuarios.xhtml" icon="pi pi-cog"
+                            styleClass="ui-button-primary" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-building" style="margin-right: 8px; color: #10b981;"></i> Proyectos
+                    </f:facet>
+                    <p>Administra los proyectos y obras activas.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Proyectos" outcome="/maestros/proyectos.xhtml" icon="pi pi-list"
+                            styleClass="ui-button-success" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-truck" style="margin-right: 8px; color: #8b5cf6;"></i> Proveedores
+                    </f:facet>
+                    <p>Gestiona la cartera de proveedores.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Proveedores" outcome="/maestros/proveedores.xhtml"
+                            icon="pi pi-external-link" styleClass="ui-button-help" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <!-- Fila 2: Almacén -->
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-box" style="margin-right: 8px; color: #f97316;"></i> Materiales
+                    </f:facet>
+                    <p>Catálogo maestro de materiales del almacén.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-search"
+                            styleClass="ui-button-warning" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-tags" style="margin-right: 8px; color: #06b6d4;"></i> Grupos
+                    </f:facet>
+                    <p>Clasificación de materiales por grupos.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Grupos" outcome="/almacen/grupos.xhtml" icon="pi pi-sitemap"
+                            styleClass="ui-button-info" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-th-large" style="margin-right: 8px; color: #ec4899;"></i> Unidades
+                    </f:facet>
+                    <p>Unidades de medida del sistema.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-table"
+                            styleClass="ui-button-secondary" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <!-- Fila 3: Compras y Reportes -->
+            <div class="p-col-12 p-md-6">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-check-circle" style="margin-right: 8px; color: #22c55e;"></i> Aprobaciones
+                    </f:facet>
+                    <p>Revisa y aprueba requerimientos pendientes del equipo.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ir a Aprobaciones" outcome="/compras/aprobacion.xhtml" icon="pi pi-verified"
+                            styleClass="ui-button-success" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-6">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-chart-bar" style="margin-right: 8px; color: #6366f1;"></i> Reportes
+                    </f:facet>
+                    <p>Consulta estadísticas y reportes de órdenes de compra.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-line"
+                            styleClass="ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+        </div>
+    </ui:define>
+
+</ui:composition>

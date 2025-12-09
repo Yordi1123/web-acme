@@ -204,17 +204,18 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `username` varchar(50) NOT NULL,
   `password` varchar(100) NOT NULL,
   `nombre_completo` varchar(100) DEFAULT NULL,
-  `cargo` enum('ENCARGADO_OBRA','JEFE_AREA','LOGISTICA') NOT NULL,
+  `cargo` enum('ENCARGADO_OBRA','JEFE_AREA','LOGISTICA','ADMINISTRADOR') NOT NULL,
   `estado` enum('Activo','Inactivo') DEFAULT 'Activo',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table dbprueba.usuario: ~3 rows (approximately)
+-- Dumping data for table dbprueba.usuario: ~4 rows (approximately)
 INSERT INTO `usuario` (`id`, `username`, `password`, `nombre_completo`, `cargo`, `estado`) VALUES
 	(1, 'juan.obra', '1234', 'Juan Perez (Obrero)', 'ENCARGADO_OBRA', 'Activo'),
 	(2, 'luis.jefe', '1234', 'Luis Martinez (Jefe)', 'JEFE_AREA', 'Activo'),
-	(3, 'ana.logistica', '1234', 'Ana Lopez (Compras)', 'LOGISTICA', 'Activo');
+	(3, 'ana.logistica', '1234', 'Ana Lopez (Compras)', 'LOGISTICA', 'Activo'),
+	(4, 'admin', 'admin123', 'Administrador del Sistema', 'ADMINISTRADOR', 'Activo');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

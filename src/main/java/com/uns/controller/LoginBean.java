@@ -29,13 +29,15 @@ public class LoginBean implements Serializable {
             // Lógica de Redirección según Rol
             switch (usuario.getCargo()) {
                 case ENCARGADO_OBRA:
-                    return "/encargado/dashboard?faces-redirect=true";
+                    return "/encargado/dashboard.xhtml?faces-redirect=true";
                 case JEFE_AREA:
-                    return "/jefe/dashboard?faces-redirect=true";
+                    return "/jefe/dashboard.xhtml?faces-redirect=true";
                 case LOGISTICA:
-                    return "/logistica/dashboard?faces-redirect=true";
+                    return "/logistica/dashboard.xhtml?faces-redirect=true";
+                case ADMINISTRADOR:
+                    return "/admin/dashboard.xhtml?faces-redirect=true";
                 default:
-                     return "index.xhtml?faces-redirect=true";
+                     return "/index.xhtml?faces-redirect=true";
             }
         } else {
             FacesContext.getCurrentInstance().addMessage(null,
