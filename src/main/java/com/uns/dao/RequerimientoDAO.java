@@ -190,6 +190,7 @@ public class RequerimientoDAO {
         EntityManager em = JPAFactory.getEntityManager();
         List<Requerimiento> lista = new ArrayList<>();
         try {
+            // Usar OR en lugar de IN(:list) para compatibilidad con EclipseLink
             lista = em.createQuery(
                 "SELECT DISTINCT r FROM Requerimiento r " +
                 "LEFT JOIN FETCH r.detalles d " +
@@ -199,14 +200,13 @@ public class RequerimientoDAO {
                 "LEFT JOIN FETCH r.proyecto " +
                 "LEFT JOIN FETCH r.areaNegocio a " +
                 "WHERE a.jefe.id = :idJefe " +
-                "AND r.estado IN (:estados) " +
+                "AND (r.estado = :estado1 OR r.estado = :estado2 OR r.estado = :estado3) " +
                 "ORDER BY r.fechaSolicitud DESC", 
                 Requerimiento.class)
                 .setParameter("idJefe", idJefe)
-                .setParameter("estados", java.util.Arrays.asList(
-                    com.uns.enums.EstadoRequerimiento.APROBADO,
-                    com.uns.enums.EstadoRequerimiento.EN_ATENCION,
-                    com.uns.enums.EstadoRequerimiento.ATENDIDO_TOTAL))
+                .setParameter("estado1", com.uns.enums.EstadoRequerimiento.APROBADO)
+                .setParameter("estado2", com.uns.enums.EstadoRequerimiento.EN_ATENCION)
+                .setParameter("estado3", com.uns.enums.EstadoRequerimiento.ATENDIDO_TOTAL)
                 .getResultList();
         } catch (Exception e) {
             System.out.println("Error en RequerimientoDAO.findAprobadosByJefe: " + e.getMessage());
@@ -226,6 +226,8 @@ public class RequerimientoDAO {
         EntityManager em = JPAFactory.getEntityManager();
         List<Requerimiento> lista = new ArrayList<>();
         try {
+            System.out.println("=== findAprobadosParaCompras: Iniciando búsqueda ===");
+            // Usar OR en lugar de IN(:list) para compatibilidad con EclipseLink
             lista = em.createQuery(
                 "SELECT DISTINCT r FROM Requerimiento r " +
                 "LEFT JOIN FETCH r.detalles d " +
@@ -237,13 +239,16 @@ public class RequerimientoDAO {
                 "LEFT JOIN FETCH r.areaNegocio " +
                 "LEFT JOIN FETCH r.jefeAprobador " +
                 "LEFT JOIN FETCH r.centroCosto " +
-                "WHERE r.estado IN (:estados) " +
+                "WHERE (r.estado = :estado1 OR r.estado = :estado2) " +
                 "ORDER BY r.fechaSolicitud DESC", 
                 Requerimiento.class)
-                .setParameter("estados", java.util.Arrays.asList(
-                    com.uns.enums.EstadoRequerimiento.APROBADO,
-                    com.uns.enums.EstadoRequerimiento.EN_ATENCION))
+                .setParameter("estado1", com.uns.enums.EstadoRequerimiento.APROBADO)
+                .setParameter("estado2", com.uns.enums.EstadoRequerimiento.EN_ATENCION)
                 .getResultList();
+            System.out.println("=== findAprobadosParaCompras: Encontrados " + lista.size() + " requerimientos ===");
+            for (Requerimiento r : lista) {
+                System.out.println("  - ID: " + r.getId() + ", Estado: " + r.getEstado() + ", Proyecto: " + (r.getProyecto() != null ? r.getProyecto().getNombre() : "null"));
+            }
         } catch (Exception e) {
             System.out.println("Error en RequerimientoDAO.findAprobadosParaCompras: " + e.getMessage());
             e.printStackTrace();

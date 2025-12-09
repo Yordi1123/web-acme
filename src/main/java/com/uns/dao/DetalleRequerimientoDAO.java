@@ -48,19 +48,19 @@ public class DetalleRequerimientoDAO {
         EntityManager em = JPAFactory.getEntityManager();
         List<DetalleRequerimiento> lista = new ArrayList<>();
         try {
+            // Usar OR en lugar de IN(:list) para compatibilidad con EclipseLink
             lista = em.createQuery(
                 "SELECT d FROM DetalleRequerimiento d " +
                 "JOIN FETCH d.requerimiento r " +
                 "JOIN FETCH d.material m " +
                 "JOIN FETCH m.unidad " +
                 "JOIN FETCH r.proyecto " +
-                "WHERE r.estado IN (:estados) " +
+                "WHERE (r.estado = :estado1 OR r.estado = :estado2) " +
                 "AND (d.cantidadAtendida IS NULL OR d.cantidadAtendida < d.cantidadSolicitada) " +
                 "ORDER BY r.fechaSolicitud, d.material.nombre", 
                 DetalleRequerimiento.class)
-                .setParameter("estados", java.util.Arrays.asList(
-                    com.uns.enums.EstadoRequerimiento.APROBADO,
-                    com.uns.enums.EstadoRequerimiento.EN_ATENCION))
+                .setParameter("estado1", com.uns.enums.EstadoRequerimiento.APROBADO)
+                .setParameter("estado2", com.uns.enums.EstadoRequerimiento.EN_ATENCION)
                 .getResultList();
         } catch (Exception e) {
             System.out.println("Error en DetalleRequerimientoDAO.findPendingItems: " + e.getMessage());
