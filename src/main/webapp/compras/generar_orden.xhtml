@@ -2,89 +2,276 @@
     xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <h1>Generar Orden de Compra</h1>
+        <h1 style="margin-bottom: 5px;">
+            <i class="pi pi-file-edit" style="color: #10b981;"></i> Generar Orden de Compra
+        </h1>
+        <p style="color: #666; margin-top: 0;">
+            #{comprasBean.modoMultiRequerimiento ? 'Orden con items de múltiples requerimientos' : 'Crear nueva orden de
+            compra'}
+        </p>
 
         <h:form id="formGenerar">
-            <p:panel header="Selección de Requerimiento Aprobado" style="margin-bottom: 20px;">
-                <p:panelGrid columns="3" layout="flex" contentStyleClass="p-align-baseline ui-fluid">
-                    <p:outputLabel value="Requerimiento:" for="req" />
-                    <p:selectOneMenu id="req" value="#{comprasBean.requerimientoSeleccionado}"
-                        converter="omnifaces.SelectItemsConverter" required="true">
-                        <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
-                        <f:selectItems value="#{comprasBean.listaRequerimientosAprobados}" var="r"
-                            itemLabel="Ref: #{r.id} - #{r.proyecto.nombre} (#{r.fechaSolicitud})" itemValue="#{r}" />
-                        <p:ajax listener="#{comprasBean.cargarDetallesDeRequerimiento}" update="panelOrden" />
-                    </p:selectOneMenu>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
 
-                    <p:message for="req" />
-                </p:panelGrid>
-            </p:panel>
+                <!-- PANEL IZQUIERDO: Datos de la Orden -->
+                <div>
+                    <p:panel header="Datos de la Orden" styleClass="shadow-2">
+                        <!-- Proveedor -->
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Proveedor *</label>
+                            <p:selectOneMenu id="prov" value="#{comprasBean.ordenCompra.proveedor}"
+                                converter="omnifaces.SelectItemsConverter" required="true" style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar Proveedor --" itemValue="" />
+                                <f:selectItems value="#{comprasBean.listaProveedores}" var="pv"
+                                    itemLabel="#{pv.razonSocial}" itemValue="#{pv}" />
+                                <p:ajax update="proveedorInfo" />
+                            </p:selectOneMenu>
+                        </div>
 
-            <p:panel id="panelOrden" header="Datos de la Orden"
-                visible="#{not empty comprasBean.requerimientoSeleccionado}">
-                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid"
-                    style="margin-bottom: 20px;">
-                    <p:outputLabel value="Proveedor:" for="prov" />
-                    <p:selectOneMenu id="prov" value="#{comprasBean.ordenCompra.proveedor}"
-                        converter="omnifaces.SelectItemsConverter" required="true">
-                        <f:selectItem itemLabel="-- Seleccionar Proveedor --" itemValue="" />
-                        <f:selectItems value="#{comprasBean.listaProveedores}" var="pv" itemLabel="#{pv.razonSocial}"
-                            itemValue="#{pv}" />
-                    </p:selectOneMenu>
+                        <!-- Info Proveedor (RUC, Dirección) -->
+                        <p:outputPanel id="proveedorInfo"
+                            rendered="#{comprasBean.ordenCompra.proveedor ne null and comprasBean.ordenCompra.proveedor.id ne null}">
+                            <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                                <div style="display: grid; gap: 5px; font-size: 0.9rem;">
+                                    <div>
+                                        <strong style="color: #64748b;">RUC:</strong>
+                                        <span style="color: #1e293b;">#{comprasBean.ordenCompra.proveedor.ruc}</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #64748b;">Dirección:</strong>
+                                        <span
+                                            style="color: #1e293b;">#{comprasBean.ordenCompra.proveedor.direccion}</span>
+                                    </div>
+                                    <div rendered="#{not empty comprasBean.ordenCompra.proveedor.telefono}">
+                                        <strong style="color: #64748b;">Teléfono:</strong>
+                                        <span
+                                            style="color: #1e293b;">#{comprasBean.ordenCompra.proveedor.telefono}</span>
+                                    </div>
+                                    <div rendered="#{not empty comprasBean.ordenCompra.proveedor.contacto}">
+                                        <strong style="color: #64748b;">Contacto:</strong>
+                                        <span
+                                            style="color: #1e293b;">#{comprasBean.ordenCompra.proveedor.contacto}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:outputPanel>
 
-                    <p:outputLabel value="Fecha Emisión:" />
-                    <h:outputText value="#{comprasBean.ordenCompra.fechaEmision}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
-                    </h:outputText>
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Fecha Emisión</label>
+                            <h:outputText value="#{comprasBean.ordenCompra.fechaEmision}"
+                                style="font-weight: bold; color: #3b82f6;">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                            </h:outputText>
+                        </div>
 
-                    <p:outputLabel value="Moneda:" for="mon" />
-                    <p:selectOneMenu id="mon" value="#{comprasBean.ordenCompra.moneda}">
-                        <f:selectItem itemLabel="Soles" itemValue="Soles" />
-                        <f:selectItem itemLabel="Dólares" itemValue="Dólares" />
-                    </p:selectOneMenu>
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Moneda</label>
+                            <p:selectOneMenu id="mon" value="#{comprasBean.ordenCompra.moneda}" style="width: 100%;">
+                                <f:selectItem itemLabel="Soles (S/)" itemValue="Soles" />
+                                <f:selectItem itemLabel="Dólares (USD)" itemValue="Dolares" />
+                            </p:selectOneMenu>
+                        </div>
 
-                    <p:outputLabel value="Usuario Compras:" />
-                    <h:outputText value="#{comprasBean.ordenCompra.usuarioCompras.username}"
-                        style="font-weight: bold;" />
-                </p:panelGrid>
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Forma de Pago</label>
+                            <p:selectOneMenu id="formaPago" value="#{comprasBean.ordenCompra.formaPago}"
+                                style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                <f:selectItem itemLabel="Contado" itemValue="Contado" />
+                                <f:selectItem itemLabel="Crédito 15 días" itemValue="Crédito 15 días" />
+                                <f:selectItem itemLabel="Crédito 30 días" itemValue="Crédito 30 días" />
+                                <f:selectItem itemLabel="Crédito 45 días" itemValue="Crédito 45 días" />
+                                <f:selectItem itemLabel="Crédito 60 días" itemValue="Crédito 60 días" />
+                                <f:selectItem itemLabel="Contra entrega" itemValue="Contra entrega" />
+                                <f:selectItem itemLabel="Transferencia bancaria" itemValue="Transferencia bancaria" />
+                                <f:selectItem itemLabel="Cheque" itemValue="Cheque" />
+                            </p:selectOneMenu>
+                        </div>
 
-                <p:dataTable value="#{comprasBean.detalles}" var="d" style="margin-bottom: 20px;"
-                    emptyMessage="No hay items cargados">
-                    <p:column headerText="Material">
-                        <h:outputText value="#{d.detalleRequerimiento.material.nombre}" />
-                    </p:column>
-                    <p:column headerText="Unidad" width="80">
-                        <h:outputText value="#{d.detalleRequerimiento.material.unidad.abreviatura}" />
-                    </p:column>
-                    <p:column headerText="Cantidad Solicitada" width="130" style="text-align: right;">
-                        <h:outputText value="#{d.detalleRequerimiento.cantidadSolicitada}">
-                            <f:convertNumber minFractionDigits="2" />
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Cantidad a Comprar" width="150">
-                        <p:inputNumber value="#{d.cantidad}" decimalPlaces="2" required="true" minValue="0.01"
-                            maxValue="#{d.detalleRequerimiento.cantidadPendiente}" />
-                    </p:column>
-                    <p:column headerText="Precio Unit." width="150">
-                        <p:inputNumber value="#{d.precioUnitario}" symbol="S/ " decimalPlaces="2" required="true"
-                            minValue="0.01" />
-                    </p:column>
-                </p:dataTable>
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Lugar de
+                                Entrega</label>
+                            <p:selectOneMenu value="#{comprasBean.ordenCompra.lugarEntrega}" style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                <f:selectItems value="#{comprasBean.lugaresEntregaPredefinidos}" />
+                            </p:selectOneMenu>
+                        </div>
 
-                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="width: 300px; margin-left: auto;">
-                    <p:outputLabel value="Lugar de Entrega:" />
-                    <p:inputText value="#{comprasBean.ordenCompra.lugarEntrega}" placeholder="Dirección..." />
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Fecha Entrega
+                                Esperada</label>
+                            <p:datePicker value="#{comprasBean.ordenCompra.fechaEntrega}" pattern="dd/MM/yyyy"
+                                showIcon="true" style="width: 100%;" />
+                        </div>
 
-                    <p:outputLabel value="Observaciones:" />
-                    <p:inputTextarea value="#{comprasBean.ordenCompra.observaciones}" rows="2" />
-                </p:panelGrid>
+                        <div class="p-field" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Observaciones</label>
+                            <p:inputTextarea value="#{comprasBean.ordenCompra.observaciones}" rows="3"
+                                style="width: 100%;" placeholder="Notas adicionales, instrucciones especiales..." />
+                        </div>
 
-                <f:facet name="footer">
-                    <p:commandButton value="Generar Orden" icon="pi pi-check"
-                        actionListener="#{comprasBean.generarOrden}" update=":formGenerar :msgs"
-                        styleClass="ui-button-success" style="width: 100%;" />
-                </f:facet>
-            </p:panel>
+                        <div class="p-field">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">Generado por</label>
+                            <h:outputText value="#{comprasBean.ordenCompra.usuarioCompras.nombreCompleto}"
+                                style="color: #666;" />
+                        </div>
+                    </p:panel>
+
+                    <!-- Totales -->
+                    <p:panel header="Resumen de Costos" styleClass="shadow-2" style="margin-top: 20px;">
+                        <div style="display: grid; gap: 12px;">
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                <span>Sub Total:</span>
+                                <strong>
+                                    #{comprasBean.ordenCompra.moneda eq 'Dolares' ? 'USD ' : 'S/ '}
+                                    <h:outputText value="#{comprasBean.subTotalCalculado}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                                    </h:outputText>
+                                </strong>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                <span>IGV (18%):</span>
+                                <strong>
+                                    #{comprasBean.ordenCompra.moneda eq 'Dolares' ? 'USD ' : 'S/ '}
+                                    <h:outputText value="#{comprasBean.igvCalculado}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                                    </h:outputText>
+                                </strong>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; padding-top: 12px; font-size: 1.3rem;">
+                                <span style="font-weight: 600;">TOTAL:</span>
+                                <strong style="color: #10b981;">
+                                    #{comprasBean.ordenCompra.moneda eq 'Dolares' ? 'USD ' : 'S/ '}
+                                    <h:outputText value="#{comprasBean.totalCalculado}">
+                                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                                    </h:outputText>
+                                </strong>
+                            </div>
+                        </div>
+                    </p:panel>
+                </div>
+
+                <!-- PANEL DERECHO: Items de la Orden -->
+                <div>
+                    <!-- Selector de Requerimiento (solo si no hay items desde flash) -->
+                    <p:panel header="Seleccionar Requerimiento" styleClass="shadow-2"
+                        rendered="#{not comprasBean.modoMultiRequerimiento and empty comprasBean.detalles}"
+                        style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px; align-items: end;">
+                            <div style="flex: 1;">
+                                <label style="font-weight: 500; display: block; margin-bottom: 5px;">Requerimiento
+                                    Aprobado</label>
+                                <p:selectOneMenu id="req" value="#{comprasBean.requerimientoSeleccionado}"
+                                    converter="omnifaces.SelectItemsConverter" style="width: 100%;">
+                                    <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                    <f:selectItems value="#{comprasBean.listaRequerimientosAprobados}" var="r"
+                                        itemLabel="#{r.codigoReq ne null ? r.codigoReq : 'REQ-'.concat(r.id)} - #{r.proyecto.nombre}"
+                                        itemValue="#{r}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <p:commandButton value="Cargar Items" icon="pi pi-download"
+                                actionListener="#{comprasBean.cargarDetallesDeRequerimiento}" update="panelItems"
+                                styleClass="ui-button-secondary" />
+                        </div>
+                        <p style="color: #666; margin-top: 10px; font-size: 0.9rem;">
+                            <i class="pi pi-info-circle"></i>
+                            También puede seleccionar items desde el <a href="pool_compras.xhtml"
+                                style="color: #3b82f6;">Pool de Compras</a>
+                            para agrupar de múltiples requerimientos.
+                        </p>
+                    </p:panel>
+
+                    <!-- Info de modo multi-requerimiento -->
+                    <p:outputPanel rendered="#{comprasBean.modoMultiRequerimiento}"
+                        style="background: #dbeafe; border: 1px solid #3b82f6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <i class="pi pi-info-circle" style="color: #1d4ed8;"></i>
+                        <strong style="color: #1e40af;"> Modo Agrupado:</strong>
+                        <span style="color: #1e3a8a;">Items seleccionados desde el Pool de Compras (pueden ser de
+                            distintos requerimientos)</span>
+                    </p:outputPanel>
+
+                    <!-- Tabla de Items -->
+                    <p:panel id="panelItems" header="Items de la Orden (#{comprasBean.detalles.size()})"
+                        styleClass="shadow-2">
+                        <p:dataTable id="tablaItems" value="#{comprasBean.detalles}" var="d"
+                            emptyMessage="No hay items cargados. Seleccione un requerimiento o use el Pool de Compras."
+                            stripedRows="true" size="small">
+
+                            <p:column headerText="Req #" style="width: 60px;">
+                                <h:outputText value="#{d.detalleRequerimiento.requerimiento.id}" />
+                            </p:column>
+
+                            <p:column headerText="Material">
+                                <h:outputText value="#{d.detalleRequerimiento.material.nombre}"
+                                    style="font-weight: 500;" />
+                            </p:column>
+
+                            <p:column headerText="Unidad" style="width: 70px;">
+                                <h:outputText value="#{d.detalleRequerimiento.material.unidad.abreviatura}" />
+                            </p:column>
+
+                            <p:column headerText="Pendiente" style="width: 90px; text-align: right;">
+                                <h:outputText value="#{d.detalleRequerimiento.cantidadPendiente}"
+                                    style="color: #dc2626;">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Cantidad" style="width: 110px;">
+                                <p:inputNumber value="#{d.cantidad}" decimalPlaces="2" minValue="0.01"
+                                    maxValue="#{d.detalleRequerimiento.cantidadPendiente}" style="width: 100%;"
+                                    size="8">
+                                    <p:ajax update="@form:panelItems @form" />
+                                </p:inputNumber>
+                            </p:column>
+
+                            <p:column headerText="P. Unit." style="width: 110px;">
+                                <p:inputNumber value="#{d.precioUnitario}" decimalPlaces="2" minValue="0"
+                                    style="width: 100%;" size="8">
+                                    <p:ajax update="@form:panelItems @form" />
+                                </p:inputNumber>
+                            </p:column>
+
+                            <p:column headerText="Importe" style="width: 100px; text-align: right;">
+                                <h:outputText
+                                    value="#{d.cantidad != null and d.precioUnitario != null ? d.cantidad * d.precioUnitario : 0}"
+                                    style="font-weight: 500;">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column style="width: 50px;">
+                                <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger ui-button-sm"
+                                    actionListener="#{comprasBean.eliminarItem(d)}" update="panelItems"
+                                    title="Eliminar item" />
+                            </p:column>
+                        </p:dataTable>
+
+                        <f:facet name="footer">
+                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <p:commandButton value="Limpiar" icon="pi pi-refresh"
+                                    actionListener="#{comprasBean.nuevaOrden}" update=":formGenerar"
+                                    styleClass="ui-button-secondary" />
+                                <p:commandButton value="Guardar Borrador" icon="pi pi-save"
+                                    actionListener="#{comprasBean.guardarBorrador}" update=":formGenerar :msgs"
+                                    styleClass="ui-button-warning" title="Guardar sin actualizar cantidades" />
+                                <p:commandButton value="Generar Orden" icon="pi pi-check"
+                                    actionListener="#{comprasBean.generarOrden}" update=":formGenerar :msgs"
+                                    styleClass="ui-button-success" title="Generar y actualizar cantidades atendidas" />
+                            </div>
+                        </f:facet>
+                    </p:panel>
+                </div>
+            </div>
         </h:form>
+
+        <style>
+            .shadow-2 {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        </style>
     </ui:define>
 </ui:composition>

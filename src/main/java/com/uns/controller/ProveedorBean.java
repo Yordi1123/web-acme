@@ -36,13 +36,46 @@ public class ProveedorBean implements Serializable {
         try {
             if (proveedor.getId() == null) {
                 proveedorDAO.create(proveedor);
+                jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                        "Éxito", "Proveedor creado correctamente"));
             } else {
                 proveedorDAO.update(proveedor);
+                jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                        "Éxito", "Proveedor actualizado correctamente"));
             }
             nuevo();
             listar();
         } catch (Exception e) {
             e.printStackTrace();
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error", "No se pudo guardar: " + e.getMessage()));
+        }
+    }
+    
+    public void seleccionar(Proveedor pv) {
+        this.proveedor = pv;
+    }
+    
+    public void eliminar(Proveedor pv) {
+        try {
+            proveedorDAO.delete(pv);
+            listar();
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                    "Eliminado", "Proveedor eliminado correctamente"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error", "No se pudo eliminar: " + e.getMessage()));
         }
     }
 

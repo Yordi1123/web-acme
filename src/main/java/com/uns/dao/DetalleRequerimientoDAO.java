@@ -41,7 +41,7 @@ public class DetalleRequerimientoDAO {
 
     /**
      * Finds all DetalleRequerimiento items that are:
-     * 1. From an APROBADO Requerimiento
+     * 1. From an APROBADO or EN_ATENCION Requerimiento
      * 2. Have cantidadAtendida < cantidadSolicitada (pending to be purchased)
      */
     public List<DetalleRequerimiento> findPendingItems() {
@@ -52,12 +52,15 @@ public class DetalleRequerimientoDAO {
                 "SELECT d FROM DetalleRequerimiento d " +
                 "JOIN FETCH d.requerimiento r " +
                 "JOIN FETCH d.material m " +
+                "JOIN FETCH m.unidad " +
                 "JOIN FETCH r.proyecto " +
-                "WHERE r.estado = :estado " +
+                "WHERE r.estado IN (:estados) " +
                 "AND (d.cantidadAtendida IS NULL OR d.cantidadAtendida < d.cantidadSolicitada) " +
                 "ORDER BY r.fechaSolicitud, d.material.nombre", 
                 DetalleRequerimiento.class)
-                .setParameter("estado", com.uns.enums.EstadoRequerimiento.APROBADO)
+                .setParameter("estados", java.util.Arrays.asList(
+                    com.uns.enums.EstadoRequerimiento.APROBADO,
+                    com.uns.enums.EstadoRequerimiento.EN_ATENCION))
                 .getResultList();
         } catch (Exception e) {
             System.out.println("Error en DetalleRequerimientoDAO.findPendingItems: " + e.getMessage());

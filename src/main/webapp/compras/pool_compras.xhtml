@@ -2,67 +2,159 @@
     xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <h1><i class="pi pi-shopping-cart" style="color: #8b5cf6;"></i> Pool de Compras</h1>
-        <p style="color: #666;">Items pendientes de compra de todos los requerimientos aprobados</p>
+        <h1 style="margin-bottom: 5px;">
+            <i class="pi pi-inbox" style="color: #8b5cf6;"></i> Bandeja de Entrada - Compras
+        </h1>
+        <p style="color: #666; margin-top: 0;">
+            Requerimientos aprobados pendientes de atención
+            <p:badge value="#{poolComprasBean.requerimientosAprobados.size()}" severity="info"
+                style="margin-left: 10px;" />
+        </p>
 
         <h:form id="formPool">
-            <p:dataTable id="tablaPool" value="#{poolComprasBean.itemsPendientes}" var="item"
-                selection="#{poolComprasBean.itemsSeleccionados}" rowKey="#{item.id}" paginator="true" rows="15"
-                stripedRows="true" emptyMessage="No hay items pendientes de compra">
+            <!-- Tabla de Requerimientos Aprobados con Row Expansion -->
+            <p:dataTable id="tablaRequerimientos" value="#{poolComprasBean.requerimientosAprobados}" var="req"
+                rowKey="#{req.id}" paginator="true" rows="10" stripedRows="true"
+                emptyMessage="No hay requerimientos aprobados pendientes" styleClass="shadow-2">
 
                 <f:facet name="header">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>Seleccione los items para generar una Orden de Compra</span>
-                        <p:commandButton value="Generar Orden (#{poolComprasBean.itemsSeleccionados.size()})"
-                            icon="pi pi-file-edit" actionListener="#{poolComprasBean.generarOrden}"
-                            styleClass="ui-button-success" update=":msgs"
-                            disabled="#{empty poolComprasBean.itemsSeleccionados}" />
+                        <span style="font-weight: 600;">
+                            <i class="pi pi-list"></i> Requerimientos Aprobados
+                        </span>
+                        <p:commandButton icon="pi pi-refresh" title="Actualizar"
+                            actionListener="#{poolComprasBean.cargarRequerimientosAprobados}"
+                            update="tablaRequerimientos" styleClass="ui-button-secondary ui-button-sm" />
                     </div>
                 </f:facet>
 
-                <p:column selectionMode="multiple" width="50" />
-
-                <p:column headerText="Proyecto" sortBy="#{item.requerimiento.proyecto.nombre}">
-                    <h:outputText value="#{item.requerimiento.proyecto.nombre}" />
+                <!-- Columna de expansión -->
+                <p:column style="width: 40px; text-align: center;">
+                    <p:rowToggler />
                 </p:column>
 
-                <p:column headerText="Req #" width="60">
-                    <h:outputText value="#{item.requerimiento.id}" />
+                <p:column headerText="Código" style="width: 120px;" sortBy="#{req.codigoReq}">
+                    <h:outputText value="#{req.codigoReq ne null ? req.codigoReq : 'REQ-'.concat(req.id)}"
+                        style="font-weight: bold; color: #3b82f6;" />
                 </p:column>
 
-                <p:column headerText="Material" sortBy="#{item.material.nombre}">
-                    <h:outputText value="#{item.material.nombre}" style="font-weight: bold;" />
-                </p:column>
-
-                <p:column headerText="Unidad" width="80">
-                    <h:outputText value="#{item.material.unidad.abreviatura}" />
-                </p:column>
-
-                <p:column headerText="Solicitado" width="100" style="text-align: right;">
-                    <h:outputText value="#{item.cantidadSolicitada}">
-                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Atendido" width="100" style="text-align: right;">
-                    <h:outputText value="#{item.cantidadAtendida != null ? item.cantidadAtendida : 0}">
-                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Pendiente" width="100"
-                    style="text-align: right; font-weight: bold; color: #dc2626;">
-                    <h:outputText value="#{item.cantidadPendiente}">
-                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Fecha Req" width="100">
-                    <h:outputText value="#{item.requerimiento.fechaSolicitud}">
+                <p:column headerText="Fecha" style="width: 100px;" sortBy="#{req.fechaSolicitud}">
+                    <h:outputText value="#{req.fechaSolicitud}">
                         <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
                     </h:outputText>
                 </p:column>
+
+                <p:column headerText="Área" style="width: 80px;">
+                    <p:badge value="#{req.areaNegocio.prefijo}" severity="info" />
+                </p:column>
+
+                <p:column headerText="Proyecto" sortBy="#{req.proyecto.nombre}">
+                    <h:outputText value="#{req.proyecto.nombre}" />
+                </p:column>
+
+                <p:column headerText="Solicitante">
+                    <h:outputText value="#{req.usuarioSolicitante.nombreCompleto}" />
+                </p:column>
+
+                <p:column headerText="Aprobó">
+                    <h:outputText value="#{req.jefeAprobador.nombreCompleto}" rendered="#{req.jefeAprobador ne null}" />
+                </p:column>
+
+                <p:column headerText="Items" style="width: 70px; text-align: center;">
+                    <p:badge value="#{req.detalles.size()}" severity="warning" />
+                </p:column>
+
+                <p:column headerText="Estado" style="width: 120px;">
+                    <p:badge value="#{req.estado.label}" severity="#{req.estado eq 'APROBADO' ? 'success' : 'info'}" />
+                </p:column>
+
+                <p:column headerText="Acciones" style="width: 100px; text-align: center;">
+                    <p:commandButton icon="pi pi-shopping-cart" styleClass="ui-button-success ui-button-rounded"
+                        title="Generar Orden de Compra"
+                        actionListener="#{poolComprasBean.generarOrdenDesdeRequerimiento(req)}" />
+                </p:column>
+
+                <!-- Row Expansion: Detalle de materiales -->
+                <p:rowExpansion>
+                    <div style="padding: 20px; background: #f8fafc;">
+                        <!-- Info del requerimiento -->
+                        <div
+                            style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                            <div
+                                style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <small style="color: #64748b;">Centro de Costo</small><br />
+                                <strong>#{req.centroCosto.codigo}</strong> - #{req.centroCosto.nombre}
+                            </div>
+                            <div
+                                style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <small style="color: #64748b;">Etapa</small><br />
+                                <strong>Etapa #{req.etapa}</strong>
+                            </div>
+                            <div
+                                style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <small style="color: #64748b;">Items Pendientes</small><br />
+                                <strong style="color: #dc2626;">#{poolComprasBean.contarItemsPendientes(req)} /
+                                    #{req.detalles.size()}</strong>
+                            </div>
+                            <div
+                                style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <small style="color: #64748b;">% Atención</small><br />
+                                <strong style="color: #22c55e;">#{req.porcentajeAtencion}%</strong>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de items -->
+                        <h4 style="margin: 0 0 10px 0; color: #3b82f6;">
+                            <i class="pi pi-box"></i> Materiales Solicitados
+                        </h4>
+                        <p:dataTable value="#{req.detalles}" var="det" stripedRows="true" size="small">
+                            <p:column headerText="#" style="width: 40px;">
+                                <h:outputText value="#{det_rowIndex + 1}" />
+                            </p:column>
+                            <p:column headerText="Material">
+                                <h:outputText value="#{det.material.nombre}" style="font-weight: 500;" />
+                            </p:column>
+                            <p:column headerText="Grupo" style="width: 120px;">
+                                <p:badge value="#{det.material.grupo.nombre}" severity="secondary" />
+                            </p:column>
+                            <p:column headerText="Unidad" style="width: 80px;">
+                                <h:outputText value="#{det.material.unidad.abreviatura}" />
+                            </p:column>
+                            <p:column headerText="Solicitado" style="width: 100px; text-align: right;">
+                                <h:outputText value="#{det.cantidadSolicitada}">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Atendido" style="width: 100px; text-align: right;">
+                                <h:outputText value="#{det.cantidadAtendida ne null ? det.cantidadAtendida : 0}"
+                                    style="color: #22c55e;">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Pendiente"
+                                style="width: 100px; text-align: right; font-weight: bold;">
+                                <h:outputText value="#{det.cantidadPendiente}"
+                                    style="color: #{det.cantidadPendiente gt 0 ? '#dc2626' : '#22c55e'};">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <!-- Observaciones si existen -->
+                        <h:panelGroup rendered="#{not empty req.observacion}"
+                            style="display: block; margin-top: 15px; background: #fef3c7; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #92400e;"><i class="pi pi-info-circle"></i> Observaciones:</strong>
+                            <p style="margin: 5px 0 0 0; white-space: pre-wrap; color: #78350f;">#{req.observacion}</p>
+                        </h:panelGroup>
+                    </div>
+                </p:rowExpansion>
             </p:dataTable>
         </h:form>
+
+        <style>
+            .shadow-2 {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        </style>
     </ui:define>
 </ui:composition>

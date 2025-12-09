@@ -216,4 +216,40 @@ public class RequerimientoDAO {
         }
         return lista;
     }
+    
+    /**
+     * Encuentra todos los requerimientos APROBADOS para el departamento de Compras.
+     * Bandeja de entrada de Compras - muestra requerimientos que requieren atención.
+     * Incluye estados: APROBADO, EN_ATENCION
+     */
+    public List<Requerimiento> findAprobadosParaCompras() {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<Requerimiento> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT DISTINCT r FROM Requerimiento r " +
+                "LEFT JOIN FETCH r.detalles d " +
+                "LEFT JOIN FETCH d.material m " +
+                "LEFT JOIN FETCH m.unidad " +
+                "LEFT JOIN FETCH m.grupo " +
+                "LEFT JOIN FETCH r.usuarioSolicitante " +
+                "LEFT JOIN FETCH r.proyecto " +
+                "LEFT JOIN FETCH r.areaNegocio " +
+                "LEFT JOIN FETCH r.jefeAprobador " +
+                "LEFT JOIN FETCH r.centroCosto " +
+                "WHERE r.estado IN (:estados) " +
+                "ORDER BY r.fechaSolicitud DESC", 
+                Requerimiento.class)
+                .setParameter("estados", java.util.Arrays.asList(
+                    com.uns.enums.EstadoRequerimiento.APROBADO,
+                    com.uns.enums.EstadoRequerimiento.EN_ATENCION))
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en RequerimientoDAO.findAprobadosParaCompras: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
 }

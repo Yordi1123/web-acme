@@ -2,52 +2,189 @@
     xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <h1>Reporte de Órdenes de Compra</h1>
+        <h1 style="margin-bottom: 5px;">
+            <i class="pi pi-list" style="color: #8b5cf6;"></i> Gestión de Órdenes de Compra
+        </h1>
+        <p style="color: #666; margin-top: 0;">Listado y gestión del flujo de aprobación</p>
 
-        <h:form id="formReporte">
-            <div class="card">
-                <p:dataTable id="dtOrdenes" value="#{comprasBean.listaOrdenes}" var="o" paginator="true" rows="10"
-                    stripedRows="true" rowKey="#{o.id}" selectionMode="single">
+        <h:form id="formOrdenes">
+            <p:dataTable id="tablaOrdenes" value="#{comprasBean.listaOrdenes}" var="o" paginator="true" rows="10"
+                stripedRows="true" styleClass="shadow-2" emptyMessage="No hay órdenes de compra registradas">
 
-                    <f:facet name="header">
-                        <div class="flex justify-content-between align-items-center">
-                            <span>Listado Total</span>
-                            <p:commandButton id="toggler" type="button" value="Columnas" icon="pi pi-align-justify" />
-                            <p:columnToggler datasource="dtOrdenes" trigger="toggler" />
+                <f:facet name="header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Órdenes de Compra</span>
+                        <div>
+                            <p:commandButton icon="pi pi-refresh" title="Actualizar"
+                                actionListener="#{comprasBean.init}" update="tablaOrdenes"
+                                styleClass="ui-button-secondary ui-button-sm" style="margin-right: 10px;" />
+                            <p:button value="Nueva Orden" icon="pi pi-plus" outcome="generar_orden"
+                                styleClass="ui-button-success" />
                         </div>
-                    </f:facet>
+                    </div>
+                </f:facet>
 
-                    <p:column headerText="ID" width="50" sortBy="#{o.id}">
-                        <h:outputText value="#{o.id}" />
-                    </p:column>
+                <p:column headerText="Número" style="width: 120px;" sortBy="#{o.numeroOrden}">
+                    <h:outputText value="#{o.numeroOrden}" style="font-weight: bold; color: #3b82f6;" />
+                </p:column>
 
-                    <p:column headerText="Fecha" sortBy="#{o.fechaEmision}">
-                        <h:outputText value="#{o.fechaEmision}">
-                            <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
-                        </h:outputText>
-                    </p:column>
+                <p:column headerText="Fecha" style="width: 100px;" sortBy="#{o.fechaEmision}">
+                    <h:outputText value="#{o.fechaEmision}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </p:column>
 
-                    <p:column headerText="Proveedor" filterBy="#{o.proveedor.razonSocial}">
-                        <h:outputText value="#{o.proveedor.razonSocial}" />
-                    </p:column>
+                <p:column headerText="Proveedor" sortBy="#{o.proveedor.razonSocial}">
+                    <h:outputText value="#{o.proveedor.razonSocial}" />
+                    <br />
+                    <small style="color: #666;">RUC: #{o.proveedor.ruc}</small>
+                </p:column>
 
-                    <p:column headerText="Moneda">
-                        <h:outputText value="#{o.moneda}" />
-                    </p:column>
+                <p:column headerText="Total" style="width: 120px; text-align: right;" sortBy="#{o.total}">
+                    <h:outputText value="#{o.moneda eq 'Dolares' ? 'USD ' : 'S/ '}" />
+                    <h:outputText value="#{o.total}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                    </h:outputText>
+                </p:column>
 
-                    <p:column headerText="Estado">
-                        <span
-                            class="badge #{o.estado eq 'GENERADA' ? 'badge-primary' : (o.estado eq 'ANULADA' ? 'badge-danger' : 'badge-success')}">
-                            #{o.estado}
-                        </span>
-                    </p:column>
+                <p:column headerText="Generó" style="width: 150px;">
+                    <h:outputText value="#{o.usuarioCompras.nombreCompleto}" rendered="#{o.usuarioCompras ne null}" />
+                </p:column>
 
-                    <p:column headerText="Responsable">
-                        <h:outputText value="#{o.usuarioCompras.username}" />
-                    </p:column>
+                <p:column headerText="Estado" style="width: 110px; text-align: center;">
+                    <p:badge value="#{o.estado.label}" severity="#{o.estado eq 'BORRADOR' ? 'secondary' : 
+                                   (o.estado eq 'GENERADA' ? 'warning' : 
+                                   (o.estado eq 'APROBADA' ? 'info' : 
+                                   (o.estado eq 'ENVIADA' ? 'success' : 'danger')))}" />
+                </p:column>
 
-                </p:dataTable>
-            </div>
+                <p:column headerText="Acciones" style="width: 200px; text-align: center;">
+                    <!-- Aprobar (solo GENERADA) -->
+                    <p:commandButton icon="pi pi-check" styleClass="ui-button-success ui-button-sm"
+                        actionListener="#{comprasBean.aprobarOrden(o)}" update="tablaOrdenes :msgs"
+                        title="Aprobar (Visto Bueno)" rendered="#{comprasBean.puedeAprobar(o)}"
+                        style="margin-right: 5px;">
+                        <p:confirm header="Confirmar Aprobación" message="¿Aprobar la orden #{o.numeroOrden}?"
+                            icon="pi pi-check-circle" />
+                    </p:commandButton>
+
+                    <!-- Enviar (solo APROBADA) -->
+                    <p:commandButton icon="pi pi-send" styleClass="ui-button-info ui-button-sm"
+                        actionListener="#{comprasBean.enviarOrden(o)}" update="tablaOrdenes :msgs"
+                        title="Enviar a Proveedor" rendered="#{comprasBean.puedeEnviar(o)}" style="margin-right: 5px;">
+                        <p:confirm header="Confirmar Envío" message="¿Marcar como enviada la orden #{o.numeroOrden}?"
+                            icon="pi pi-send" />
+                    </p:commandButton>
+
+                    <!-- Anular (cualquiera excepto ANULADA) -->
+                    <p:commandButton icon="pi pi-times" styleClass="ui-button-danger ui-button-sm"
+                        actionListener="#{comprasBean.prepararAnulacion(o)}" oncomplete="PF('dlgAnular').show()"
+                        update=":formAnular" title="Anular Orden" rendered="#{comprasBean.puedeAnular(o)}" />
+
+                    <!-- Ver detalle (siempre) -->
+                    <p:commandButton icon="pi pi-eye" styleClass="ui-button-secondary ui-button-sm"
+                        oncomplete="PF('dlgDetalle').show()" update=":formDetalle" title="Ver Detalle"
+                        style="margin-left: 5px;">
+                        <f:setPropertyActionListener value="#{o}" target="#{comprasBean.ordenCompra}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes ui-button-success"
+                    icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                    icon="pi pi-times" />
+            </p:confirmDialog>
         </h:form>
+
+        <!-- Diálogo de Anulación -->
+        <p:dialog header="Anular Orden de Compra" widgetVar="dlgAnular" modal="true" width="500" closable="true">
+            <h:form id="formAnular">
+                <div style="padding: 20px;" rendered="#{comprasBean.ordenParaAnular ne null}">
+                    <p style="margin-bottom: 15px;">
+                        <strong>Orden:</strong> #{comprasBean.ordenParaAnular.numeroOrden}<br />
+                        <strong>Proveedor:</strong> #{comprasBean.ordenParaAnular.proveedor.razonSocial}<br />
+                        <strong>Total:</strong> S/ #{comprasBean.ordenParaAnular.total}
+                    </p>
+
+                    <div class="p-field">
+                        <label style="font-weight: 500; display: block; margin-bottom: 5px;">
+                            Motivo de Anulación *
+                        </label>
+                        <p:inputTextarea value="#{comprasBean.motivoAnulacion}" rows="4" style="width: 100%;"
+                            required="true"
+                            placeholder="Explique el motivo de anulación (cancelación de proyecto, error de datos, etc.)" />
+                    </div>
+
+                    <div style="text-align: right; margin-top: 15px;">
+                        <p:commandButton value="Cancelar" icon="pi pi-times"
+                            onclick="PF('dlgAnular').hide(); return false;" styleClass="ui-button-secondary"
+                            style="margin-right: 10px;" />
+                        <p:commandButton value="Anular Orden" icon="pi pi-trash"
+                            actionListener="#{comprasBean.anularOrden}" update=":formOrdenes:tablaOrdenes :msgs"
+                            oncomplete="PF('dlgAnular').hide();" styleClass="ui-button-danger" />
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Diálogo de Detalle -->
+        <p:dialog header="Detalle de Orden" widgetVar="dlgDetalle" modal="true" width="700" closable="true">
+            <h:form id="formDetalle">
+                <div style="padding: 20px;" rendered="#{comprasBean.ordenCompra ne null}">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                        <div>
+                            <strong>Número:</strong> #{comprasBean.ordenCompra.numeroOrden}<br />
+                            <strong>Fecha:</strong>
+                            <h:outputText value="#{comprasBean.ordenCompra.fechaEmision}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                            </h:outputText><br />
+                            <strong>Estado:</strong> #{comprasBean.ordenCompra.estado.label}
+                        </div>
+                        <div>
+                            <strong>Proveedor:</strong> #{comprasBean.ordenCompra.proveedor.razonSocial}<br />
+                            <strong>RUC:</strong> #{comprasBean.ordenCompra.proveedor.ruc}<br />
+                            <strong>Lugar Entrega:</strong> #{comprasBean.ordenCompra.lugarEntrega}
+                        </div>
+                    </div>
+
+                    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Sub Total:</span>
+                            <strong>S/ <h:outputText value="#{comprasBean.ordenCompra.subTotal}">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText></strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>IGV (18%):</span>
+                            <strong>S/ <h:outputText value="#{comprasBean.ordenCompra.igv}">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText></strong>
+                        </div>
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 1.2rem; padding-top: 10px; border-top: 1px solid #e5e7eb;">
+                            <span>TOTAL:</span>
+                            <strong style="color: #10b981;">S/ <h:outputText value="#{comprasBean.ordenCompra.total}">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText></strong>
+                        </div>
+                    </div>
+
+                    <h:panelGroup rendered="#{not empty comprasBean.ordenCompra.observaciones}">
+                        <div style="background: #fef3c7; padding: 10px; border-radius: 6px;">
+                            <strong>Observaciones:</strong><br />
+                            <span style="white-space: pre-wrap;">#{comprasBean.ordenCompra.observaciones}</span>
+                        </div>
+                    </h:panelGroup>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <style>
+            .shadow-2 {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        </style>
     </ui:define>
 </ui:composition>

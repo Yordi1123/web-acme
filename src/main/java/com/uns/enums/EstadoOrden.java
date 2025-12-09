@@ -1,9 +1,11 @@
 package com.uns.enums;
 
 public enum EstadoOrden {
-    GENERADA("Generada"),
-    ENVIADA("Enviada"),
-    ANULADA("Anulada");
+    BORRADOR("Borrador"),           // Orden en proceso de creación
+    GENERADA("Generada"),           // Orden lista, pendiente de aprobación
+    APROBADA("Aprobada"),           // Visto Bueno del Jefe, lista para enviar
+    ENVIADA("Enviada"),             // Enviada al proveedor
+    ANULADA("Anulada");             // Anulada (con justificación)
 
     private final String label;
 

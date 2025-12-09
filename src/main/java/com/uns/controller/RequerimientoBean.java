@@ -194,6 +194,105 @@ public class RequerimientoBean implements Serializable {
             || req.getEstado() == EstadoRequerimiento.OBSERVADO;
     }
     
+    /**
+     * Verifica si es un requerimiento observado que requiere reenvío.
+     */
+    public boolean esObservado(Requerimiento req) {
+        if (req == null || req.getEstado() == null) return false;
+        return req.getEstado() == EstadoRequerimiento.OBSERVADO;
+    }
+    
+    /**
+     * Verifica si estamos editando un requerimiento existente.
+     */
+    public boolean isEditando() {
+        return requerimiento != null && requerimiento.getId() != null;
+    }
+    
+    /**
+     * Getter para acceso desde EL.
+     */
+    public boolean getEditando() {
+        return isEditando();
+    }
+    
+    /**
+     * Reenvía un requerimiento observado al jefe.
+     * Cambia el estado de OBSERVADO a PENDIENTE para que el jefe pueda revisarlo de nuevo.
+     */
+    public void reenviarAlJefe() {
+        if (requerimiento == null || requerimiento.getId() == null) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error", "Debe seleccionar un requerimiento para reenviar"));
+            return;
+        }
+        
+        if (requerimiento.getEstado() != EstadoRequerimiento.OBSERVADO) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_WARN,
+                    "No aplicable", "Solo los requerimientos observados pueden ser reenviados"));
+            return;
+        }
+        
+        // Validar que tenga items
+        if (detalles == null || detalles.isEmpty()) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error", "Debe agregar al menos un ítem al requerimiento"));
+            return;
+        }
+        
+        try {
+            jakarta.persistence.EntityManager em = com.uns.config.JPAFactory.getEntityManager();
+            try {
+                em.getTransaction().begin();
+                
+                // Agregar nota de reenvío
+                String obsExistente = requerimiento.getObservacion() != null ? requerimiento.getObservacion() + "\n" : "";
+                requerimiento.setObservacion(obsExistente + "[REENVIADO por " + 
+                    loginBean.getUsuarioLogueado().getNombreCompleto() + " el " + 
+                    java.time.LocalDate.now() + "]");
+                
+                // Cambiar estado a PENDIENTE
+                requerimiento.setEstado(EstadoRequerimiento.PENDIENTE);
+                
+                em.merge(requerimiento);
+                
+                // Guardar detalles
+                for (DetalleRequerimiento det : detalles) {
+                    det.setRequerimiento(requerimiento);
+                    if (det.getId() == null) {
+                        em.persist(det);
+                    } else {
+                        em.merge(det);
+                    }
+                }
+                
+                em.getTransaction().commit();
+                
+                nuevoRequerimiento();
+                cargarMisRequerimientos();
+                
+                jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                        "Reenviado", "Requerimiento reenviado al jefe para su revisión"));
+                        
+            } catch (Exception e) {
+                em.getTransaction().rollback();
+                e.printStackTrace();
+            } finally {
+                em.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public void seleccionarParaEditar(Requerimiento req) {
         if (!puedeEditar(req)) {
             jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
@@ -203,8 +302,14 @@ public class RequerimientoBean implements Serializable {
             return;
         }
         this.requerimiento = req;
-        // Cargar detalles existentes
-        this.detalles = new java.util.ArrayList<>(req.getDetalles() != null ? req.getDetalles() : java.util.Collections.emptyList());
+        // Cargar detalles frescos desde la base de datos para evitar problemas de lazy loading
+        com.uns.dao.DetalleRequerimientoDAO detalleDAO = new com.uns.dao.DetalleRequerimientoDAO();
+        this.detalles = new java.util.ArrayList<>(detalleDAO.findByRequerimientoConMaterial(req.getId()));
+        
+        jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+            new jakarta.faces.application.FacesMessage(
+                jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                "Editando", "Requerimiento " + req.getCodigoReq() + " cargado para edición"));
     }
     
     public void eliminar(Requerimiento req) {

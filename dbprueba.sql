@@ -238,12 +238,15 @@ INSERT INTO `area_negocio` (`id`, `prefijo`, `nombre`, `id_jefe`, `estado`) VALU
 -- DATOS: usuarios (Jefes, Encargados, Empleados Compras)
 -- ============================================================
 INSERT INTO `usuario` (`id`, `username`, `password`, `nombre_completo`, `cargo`, `estado`, `id_area_negocio`) VALUES
-	-- JEFES DE AREA (uno por area principal)
 	(1, 'miguel.angulo', '1234', 'Miguel Angulo Rios', 'JEFE_AREA', 'Activo', 1),
 	(2, 'ana.lopez', '1234', 'Ana Lopez Gutierrez', 'JEFE_AREA', 'Activo', 2),
 	(3, 'luis.martinez', '1234', 'Luis Martinez Perez', 'JEFE_AREA', 'Activo', 3),
 	(4, 'eva.perez', '1234', 'Eva Perez Sanchez', 'JEFE_AREA', 'Activo', 4),
 	(5, 'carlos.ames', '1234', 'Carlos Ames Diaz', 'JEFE_AREA', 'Activo', 5),
+	(14, 'fausto.mantenimiento', '1234', 'Fausto Rivera Torres', 'JEFE_AREA', 'Activo', 6),
+	(15, 'gloria.marketing', '1234', 'Gloria Mendez Soto', 'JEFE_AREA', 'Activo', 7),
+	(16, 'hector.operaciones', '1234', 'Hector Vargas Luna', 'JEFE_AREA', 'Activo', 8),
+	(17, 'irene.seguridad', '1234', 'Irene Campos Rodriguez', 'JEFE_AREA', 'Activo', 9),
 	-- ENCARGADOS DE OBRA
 	(6, 'juan.obra1', '1234', 'Juan Perez Castro', 'ENCARGADO_OBRA', 'Activo', 1),
 	(7, 'pedro.obra2', '1234', 'Pedro Gomez Luna', 'ENCARGADO_OBRA', 'Activo', 1),
@@ -262,6 +265,10 @@ UPDATE `area_negocio` SET `id_jefe` = 2 WHERE `id` = 2;
 UPDATE `area_negocio` SET `id_jefe` = 3 WHERE `id` = 3;
 UPDATE `area_negocio` SET `id_jefe` = 4 WHERE `id` = 4;
 UPDATE `area_negocio` SET `id_jefe` = 5 WHERE `id` = 5;
+UPDATE `area_negocio` SET `id_jefe` = 14 WHERE `id` = 6;
+UPDATE `area_negocio` SET `id_jefe` = 15 WHERE `id` = 7;
+UPDATE `area_negocio` SET `id_jefe` = 16 WHERE `id` = 8;
+UPDATE `area_negocio` SET `id_jefe` = 17 WHERE `id` = 9;
 
 -- ============================================================
 -- TABLA: orden_compra (con campos adicionales)
@@ -278,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `orden_compra` (
   `total` decimal(12,2) DEFAULT NULL,
   `id_proveedor` int NOT NULL,
   `id_usuario_compras` int NOT NULL,
-  `estado` enum('Generada','Enviada','Anulada') DEFAULT 'Generada',
+  `estado` enum('Borrador','Generada','Aprobada','Enviada','Anulada') DEFAULT 'Borrador',
   `lugar_entrega` varchar(200) DEFAULT NULL,
   `fecha_entrega_almacen` date DEFAULT NULL,
   `observaciones` text DEFAULT NULL,
