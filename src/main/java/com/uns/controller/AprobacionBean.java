@@ -38,7 +38,7 @@ public class AprobacionBean implements Serializable {
 
     public void cargarPendientes() {
         if (loginBean != null && loginBean.isLoggedIn()) {
-            // Filtrar por jefe logueado
+            // Filtrar por requerimientos cuya área tiene asignado a este jefe
             requerimientosPendientes = requerimientoDAO.findPendientesByJefe(
                 loginBean.getUsuarioLogueado().getId());
         } else {
@@ -49,17 +49,19 @@ public class AprobacionBean implements Serializable {
     public void seleccionar(Requerimiento req) {
         this.requerimientoSeleccionado = req;
         this.observacionAprobador = null;
-        // Cargar detalles frescos
+        // Cargar detalles frescos para ver el desglose de materiales
         this.detallesSeleccionados = detalleRequerimientoDAO.findByRequerimientoConMaterial(req.getId());
     }
 
     public void aprobar(Requerimiento req) {
         req.setEstado(EstadoRequerimiento.APROBADO);
+        // Registrar quién aprobó
+        req.setJefeAprobador(loginBean.getUsuarioLogueado());
         requerimientoDAO.update(req);
         cargarPendientes();
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_INFO, "Aprobado", 
-                "Requerimiento #" + req.getId() + " aprobado exitosamente"));
+                "Requerimiento " + req.getCodigoReq() + " aprobado exitosamente"));
     }
 
     public void observar(Requerimiento req) {
@@ -71,23 +73,24 @@ public class AprobacionBean implements Serializable {
         }
         req.setEstado(EstadoRequerimiento.OBSERVADO);
         String obsExistente = req.getObservacion() != null ? req.getObservacion() + "\n" : "";
-        req.setObservacion(obsExistente + "[OBSERVADO] " + observacionAprobador);
+        req.setObservacion(obsExistente + "[OBSERVADO por " + loginBean.getUsuarioLogueado().getNombreCompleto() + "] " + observacionAprobador);
         requerimientoDAO.update(req);
         observacionAprobador = null;
         requerimientoSeleccionado = null;
         cargarPendientes();
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_INFO, "Observado", 
-                "Requerimiento #" + req.getId() + " devuelto al solicitante"));
+                "Requerimiento " + req.getCodigoReq() + " devuelto al solicitante"));
     }
 
     public void rechazar(Requerimiento req) {
         req.setEstado(EstadoRequerimiento.RECHAZADO);
+        req.setJefeAprobador(loginBean.getUsuarioLogueado());
         requerimientoDAO.update(req);
         cargarPendientes();
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado", 
-                "Requerimiento #" + req.getId() + " rechazado"));
+                "Requerimiento " + req.getCodigoReq() + " rechazado"));
     }
     
     public void rechazarConObservacion(Requerimiento req) {
@@ -98,15 +101,16 @@ public class AprobacionBean implements Serializable {
             return;
         }
         req.setEstado(EstadoRequerimiento.RECHAZADO);
+        req.setJefeAprobador(loginBean.getUsuarioLogueado());
         String obsExistente = req.getObservacion() != null ? req.getObservacion() + "\n" : "";
-        req.setObservacion(obsExistente + "[RECHAZADO] " + observacionAprobador);
+        req.setObservacion(obsExistente + "[RECHAZADO por " + loginBean.getUsuarioLogueado().getNombreCompleto() + "] " + observacionAprobador);
         requerimientoDAO.update(req);
         observacionAprobador = null;
         requerimientoSeleccionado = null;
         cargarPendientes();
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado", 
-                "Requerimiento #" + req.getId() + " rechazado con observación"));
+                "Requerimiento " + req.getCodigoReq() + " rechazado con observación"));
     }
 
     // --- Getters y Setters ---

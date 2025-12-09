@@ -151,9 +151,9 @@ public class RequerimientoDAO {
         }
         return lista;
     }
-
     /**
-     * Encuentra requerimientos PENDIENTES asignados a un jefe específico.
+     * Encuentra requerimientos PENDIENTES asignados al jefe especificado.
+     * Filtra por requerimientos cuyo área de negocio tiene al jefe como responsable.
      */
     public List<Requerimiento> findPendientesByJefe(Long idJefe) {
         EntityManager em = JPAFactory.getEntityManager();
@@ -166,7 +166,8 @@ public class RequerimientoDAO {
                 "LEFT JOIN FETCH m.unidad " +
                 "LEFT JOIN FETCH r.usuarioSolicitante " +
                 "LEFT JOIN FETCH r.proyecto " +
-                "WHERE r.estado = :estado AND r.jefeAprobador.id = :idJefe " +
+                "LEFT JOIN FETCH r.areaNegocio a " +
+                "WHERE r.estado = :estado AND a.jefe.id = :idJefe " +
                 "ORDER BY r.fechaSolicitud DESC", 
                 Requerimiento.class)
                 .setParameter("estado", com.uns.enums.EstadoRequerimiento.PENDIENTE)
@@ -182,7 +183,7 @@ public class RequerimientoDAO {
     }
 
     /**
-     * Encuentra requerimientos aprobados por un jefe específico (para seguimiento).
+     * Encuentra requerimientos aprobados/en proceso asignados al jefe (para seguimiento).
      * Incluye estados: APROBADO, EN_ATENCION, ATENDIDO_TOTAL
      */
     public List<Requerimiento> findAprobadosByJefe(Long idJefe) {
@@ -196,7 +197,8 @@ public class RequerimientoDAO {
                 "LEFT JOIN FETCH m.unidad " +
                 "LEFT JOIN FETCH r.usuarioSolicitante " +
                 "LEFT JOIN FETCH r.proyecto " +
-                "WHERE r.jefeAprobador.id = :idJefe " +
+                "LEFT JOIN FETCH r.areaNegocio a " +
+                "WHERE a.jefe.id = :idJefe " +
                 "AND r.estado IN (:estados) " +
                 "ORDER BY r.fechaSolicitud DESC", 
                 Requerimiento.class)

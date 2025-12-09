@@ -267,11 +267,11 @@
                 <p:menu>
                     <!-- ===== MENÚ PARA JEFE DE ÁREA (Plano, sin categorías) ===== -->
                     <c:if test="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
-                        <p:menuitem value="Mi Dashboard" icon="pi pi-home" outcome="/jefe/dashboard.xhtml" />
+                        <p:menuitem value="Mi Dashboard" icon="pi pi-home" outcome="/jefe/dashboard" />
                         <p:menuitem value="Aprobaciones Pendientes" icon="pi pi-check-circle"
-                            outcome="/jefe/aprobacion.xhtml" />
+                            outcome="/jefe/aprobacion" />
                         <p:menuitem value="Seguimiento de Aprobados" icon="pi pi-chart-line"
-                            outcome="/jefe/seguimiento.xhtml" />
+                            outcome="/jefe/seguimiento" />
                     </c:if>
 
                     <!-- ===== MENÚ PARA OTROS ROLES (Con categorías) ===== -->
@@ -279,38 +279,34 @@
                         <!-- General - Visible para todos excepto Jefe -->
                         <p:submenu label="Inicio">
                             <p:menuitem value="Mi Dashboard" icon="pi pi-home"
-                                outcome="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' ? '/encargado/dashboard.xhtml' : 
-                                          (loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR' ? '/admin/dashboard.xhtml' : '/logistica/dashboard.xhtml')}" />
+                                outcome="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' ? '/encargado/dashboard' : 
+                                          (loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR' ? '/admin/dashboard' : '/compras/dashboard')}" />
                         </p:submenu>
 
                         <!-- Almacén - Logística y Admin -->
                         <p:submenu label="Almacén"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
-                            <p:menuitem value="Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-box" />
-                            <p:menuitem value="Grupos" outcome="/almacen/grupos.xhtml" icon="pi pi-tags" />
-                            <p:menuitem value="Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-th-large" />
+                            <p:menuitem value="Materiales" outcome="/almacen/materiales" icon="pi pi-box" />
+                            <p:menuitem value="Grupos" outcome="/almacen/grupos" icon="pi pi-tags" />
+                            <p:menuitem value="Unidades" outcome="/almacen/unidades" icon="pi pi-th-large" />
                         </p:submenu>
 
                         <!-- Maestros - Solo Admin -->
                         <p:submenu label="Configuración"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
-                            <p:menuitem value="Proyectos" outcome="/admin/proyectos.xhtml" icon="pi pi-building" />
-                            <p:menuitem value="Proveedores" outcome="/admin/proveedores.xhtml" icon="pi pi-truck" />
-                            <p:menuitem value="Usuarios" outcome="/admin/usuarios.xhtml" icon="pi pi-users" />
+                            <p:menuitem value="Proyectos" outcome="/admin/proyectos" icon="pi pi-building" />
+                            <p:menuitem value="Proveedores" outcome="/admin/proveedores" icon="pi pi-truck" />
+                            <p:menuitem value="Usuarios" outcome="/admin/usuarios" icon="pi pi-users" />
                         </p:submenu>
 
                         <!-- Operaciones - Por Rol -->
                         <p:submenu label="Operaciones">
-                            <p:menuitem value="Mis Pedidos" outcome="/encargado/mis_pedidos.xhtml"
-                                icon="pi pi-shopping-cart"
+                            <p:menuitem value="Mis Pedidos" outcome="/encargado/mis_pedidos" icon="pi pi-shopping-cart"
                                 rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
-                            <p:menuitem value="Seguimiento" outcome="/encargado/seguimiento.xhtml" icon="pi pi-eye"
-                                rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
-                            <p:menuitem value="Generar Orden" outcome="/logistica/generar_orden.xhtml"
-                                icon="pi pi-file-edit"
+                            <p:menuitem value="Seguimiento" outcome="/compras/seguimiento_pedidos" icon="pi pi-eye" />
+                            <p:menuitem value="Generar Orden" outcome="/compras/generar_orden" icon="pi pi-file-edit"
                                 rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
-                            <p:menuitem value="Pool de Compras" outcome="/logistica/pool_compras.xhtml"
-                                icon="pi pi-list"
+                            <p:menuitem value="Pool de Compras" outcome="/compras/pool_compras" icon="pi pi-list"
                                 rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         </p:submenu>
                     </c:if>

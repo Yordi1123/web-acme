@@ -34,6 +34,7 @@ public class SeguimientoJefeBean implements Serializable {
 
     public void cargarRequerimientos() {
         if (loginBean != null && loginBean.isLoggedIn()) {
+            // Filtrar por requerimientos cuya área tiene asignado a este jefe
             requerimientos = requerimientoDAO.findAprobadosByJefe(
                 loginBean.getUsuarioLogueado().getId());
         } else {
@@ -43,6 +44,7 @@ public class SeguimientoJefeBean implements Serializable {
 
     public void seleccionar(Requerimiento req) {
         this.requerimientoSeleccionado = req;
+        // Cargar detalles frescos para ver el desglose de materiales
         this.detallesSeleccionados = detalleRequerimientoDAO.findByRequerimientoConMaterial(req.getId());
     }
 
