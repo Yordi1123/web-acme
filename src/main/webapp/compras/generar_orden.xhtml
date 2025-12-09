@@ -222,17 +222,12 @@
 
                             <p:column headerText="Cantidad" style="width: 110px;">
                                 <p:inputNumber value="#{d.cantidad}" decimalPlaces="2" minValue="0.01"
-                                    maxValue="#{d.detalleRequerimiento.cantidadPendiente}" style="width: 100%;"
-                                    size="8">
-                                    <p:ajax update="@form:panelItems @form" />
-                                </p:inputNumber>
+                                    style="width: 100%;" size="8" />
                             </p:column>
 
                             <p:column headerText="P. Unit." style="width: 110px;">
                                 <p:inputNumber value="#{d.precioUnitario}" decimalPlaces="2" minValue="0"
-                                    style="width: 100%;" size="8">
-                                    <p:ajax update="@form:panelItems @form" />
-                                </p:inputNumber>
+                                    style="width: 100%;" size="8" />
                             </p:column>
 
                             <p:column headerText="Importe" style="width: 100px; text-align: right;">
@@ -245,21 +240,22 @@
 
                             <p:column style="width: 50px;">
                                 <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger ui-button-sm"
-                                    actionListener="#{comprasBean.eliminarItem(d)}" update="panelItems"
-                                    title="Eliminar item" />
+                                    action="#{comprasBean.eliminarItem(d)}" update=":formGenerar" title="Eliminar item"
+                                    process="@this" />
                             </p:column>
                         </p:dataTable>
 
                         <f:facet name="footer">
                             <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                                <p:commandButton value="Limpiar" icon="pi pi-refresh"
-                                    actionListener="#{comprasBean.nuevaOrden}" update=":formGenerar"
-                                    styleClass="ui-button-secondary" />
+                                <p:commandButton value="Recalcular" icon="pi pi-calculator" update=":formGenerar"
+                                    styleClass="ui-button-info" title="Actualizar totales" process=":formGenerar" />
+                                <p:commandButton value="Limpiar" icon="pi pi-refresh" action="#{comprasBean.nuevaOrden}"
+                                    update=":formGenerar" styleClass="ui-button-secondary" />
                                 <p:commandButton value="Guardar Borrador" icon="pi pi-save"
-                                    actionListener="#{comprasBean.guardarBorrador}" update=":formGenerar :msgs"
+                                    action="#{comprasBean.guardarBorrador}" update=":formGenerar :msgs"
                                     styleClass="ui-button-warning" title="Guardar sin actualizar cantidades" />
                                 <p:commandButton value="Generar Orden" icon="pi pi-check"
-                                    actionListener="#{comprasBean.generarOrden}" update=":formGenerar :msgs"
+                                    action="#{comprasBean.generarOrden}" update=":formGenerar :msgs"
                                     styleClass="ui-button-success" title="Generar y actualizar cantidades atendidas" />
                             </div>
                         </f:facet>

@@ -54,6 +54,7 @@ public class DetalleRequerimientoDAO {
                 "JOIN FETCH d.requerimiento r " +
                 "JOIN FETCH d.material m " +
                 "JOIN FETCH m.unidad " +
+                "JOIN FETCH m.grupo " +
                 "JOIN FETCH r.proyecto " +
                 "WHERE (r.estado = :estado1 OR r.estado = :estado2) " +
                 "AND (d.cantidadAtendida IS NULL OR d.cantidadAtendida < d.cantidadSolicitada) " +
@@ -80,6 +81,7 @@ public class DetalleRequerimientoDAO {
                 "JOIN FETCH d.material m " +
                 "JOIN FETCH m.unidad " +
                 "JOIN FETCH m.grupo " +
+                "JOIN FETCH d.requerimiento " +
                 "WHERE d.requerimiento.id = :idReq", 
                 DetalleRequerimiento.class)
                 .setParameter("idReq", idRequerimiento)

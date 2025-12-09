@@ -97,10 +97,14 @@ public class PoolComprasBean implements Serializable {
     
     /**
      * Genera orden desde un requerimiento específico (todos sus items pendientes).
+     * Carga items frescos desde BD para evitar problemas de lazy loading.
      */
     public void generarOrdenDesdeRequerimiento(Requerimiento req) {
-        List<DetalleRequerimiento> itemsDelReq = new ArrayList<>();
-        for (DetalleRequerimiento det : req.getDetalles()) {
+        // Cargar detalles frescos con todas las relaciones necesarias
+        List<DetalleRequerimiento> itemsFrescos = detalleDAO.findByRequerimientoConMaterial(req.getId());
+        List<DetalleRequerimiento> itemsDelReq = new java.util.ArrayList<>();
+        
+        for (DetalleRequerimiento det : itemsFrescos) {
             if (det.getCantidadPendiente() != null && det.getCantidadPendiente().doubleValue() > 0) {
                 itemsDelReq.add(det);
             }
