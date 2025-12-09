@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1><i class="pi pi-shopping-cart" style="color: #ec4899;"></i> Dashboard de Compras</h1>
+        <p style="color: #666;">Bienvenido al módulo de compras</p>
+
+        <div class="grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px;">
+            <a href="#{facesContext.externalContext.requestContextPath}/compras/pool_compras.xhtml"
+                style="text-decoration: none;">
+                <div class="dashboard-card"
+                    style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <i class="pi pi-list" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 10px 0;">Pool de Compras</h3>
+                    <p style="margin: 0; opacity: 0.9;">Items pendientes de requerimientos aprobados</p>
+                </div>
+            </a>
+
+            <a href="#{facesContext.externalContext.requestContextPath}/compras/generar_orden.xhtml"
+                style="text-decoration: none;">
+                <div class="dashboard-card"
+                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <i class="pi pi-file-edit" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 10px 0;">Generar Orden</h3>
+                    <p style="margin: 0; opacity: 0.9;">Crear nueva orden de compra</p>
+                </div>
+            </a>
+
+            <a href="#{facesContext.externalContext.requestContextPath}/compras/reporte_ordenes.xhtml"
+                style="text-decoration: none;">
+                <div class="dashboard-card"
+                    style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <i class="pi pi-chart-bar" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 10px 0;">Reportes</h3>
+                    <p style="margin: 0; opacity: 0.9;">Consultar órdenes generadas</p>
+                </div>
+            </a>
+
+            <a href="#{facesContext.externalContext.requestContextPath}/almacen/materiales.xhtml"
+                style="text-decoration: none;">
+                <div class="dashboard-card"
+                    style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <i class="pi pi-box" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                    <h3 style="margin: 0 0 10px 0;">Almacén</h3>
+                    <p style="margin: 0; opacity: 0.9;">Gestionar materiales</p>
+                </div>
+            </a>
+        </div>
+    </ui:define>
+</ui:composition>

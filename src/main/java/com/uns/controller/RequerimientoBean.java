@@ -30,11 +30,15 @@ public class RequerimientoBean implements Serializable {
     private List<com.uns.entities.Proyecto> listaProyectos;
     private List<com.uns.entities.CentroCosto> listaCentrosCosto;
     private List<com.uns.entities.Material> listaMateriales;
+    private List<com.uns.entities.AreaNegocio> listaAreasNegocio;
+    private List<com.uns.entities.Usuario> listaJefes;
     
     // DAOs auxiliares
     private com.uns.dao.ProyectoDAO proyectoDAO;
     private com.uns.dao.CentroCostoDAO centroCostoDAO;
     private com.uns.dao.MaterialDAO materialDAO;
+    private com.uns.dao.AreaNegocioDAO areaNegocioDAO;
+    private com.uns.dao.UsuarioDAO usuarioDAO;
     
     // IDs seleccionados para el detalle (binding simple)
     private Long idMaterialSeleccionado;
@@ -45,10 +49,14 @@ public class RequerimientoBean implements Serializable {
         proyectoDAO = new com.uns.dao.ProyectoDAO();
         centroCostoDAO = new com.uns.dao.CentroCostoDAO();
         materialDAO = new com.uns.dao.MaterialDAO();
+        areaNegocioDAO = new com.uns.dao.AreaNegocioDAO();
+        usuarioDAO = new com.uns.dao.UsuarioDAO();
         
         listaProyectos = proyectoDAO.findAll();
         listaCentrosCosto = centroCostoDAO.findAll();
         listaMateriales = materialDAO.findAll();
+        listaAreasNegocio = areaNegocioDAO.findAll();
+        listaJefes = usuarioDAO.findByRol(com.uns.enums.RolUsuario.JEFE_AREA);
         
         nuevoRequerimiento();
         cargarMisRequerimientos();
@@ -66,13 +74,29 @@ public class RequerimientoBean implements Serializable {
         requerimiento = new Requerimiento();
         requerimiento.setFechaSolicitud(LocalDate.now());
         requerimiento.setEstado(EstadoRequerimiento.PENDIENTE);
+        requerimiento.setEtapa(1); // Default etapa 1
         
         if (loginBean != null && loginBean.isLoggedIn()) {
             requerimiento.setUsuarioSolicitante(loginBean.getUsuarioLogueado());
+            // Auto-asignar area del usuario si tiene una
+            if (loginBean.getUsuarioLogueado().getAreaNegocio() != null) {
+                requerimiento.setAreaNegocio(loginBean.getUsuarioLogueado().getAreaNegocio());
+                // Auto-asignar jefe del area
+                if (loginBean.getUsuarioLogueado().getAreaNegocio().getJefe() != null) {
+                    requerimiento.setJefeAprobador(loginBean.getUsuarioLogueado().getAreaNegocio().getJefe());
+                }
+            }
         }
         
         detalle = new DetalleRequerimiento();
         detalles = new java.util.ArrayList<>();
+    }
+    
+    public void onAreaChange() {
+        // Cuando cambia el area, auto-seleccionar su jefe
+        if (requerimiento.getAreaNegocio() != null && requerimiento.getAreaNegocio().getJefe() != null) {
+            requerimiento.setJefeAprobador(requerimiento.getAreaNegocio().getJefe());
+        }
     }
 
     public void agregarDetalle() {
@@ -213,4 +237,7 @@ public class RequerimientoBean implements Serializable {
     
     public Long getIdMaterialSeleccionado() { return idMaterialSeleccionado; }
     public void setIdMaterialSeleccionado(Long idMaterialSeleccionado) { this.idMaterialSeleccionado = idMaterialSeleccionado; }
+
+    public List<com.uns.entities.AreaNegocio> getListaAreasNegocio() { return listaAreasNegocio; }
+    public List<com.uns.entities.Usuario> getListaJefes() { return listaJefes; }
 }

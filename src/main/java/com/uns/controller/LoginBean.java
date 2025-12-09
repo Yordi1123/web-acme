@@ -32,8 +32,8 @@ public class LoginBean implements Serializable {
                     return "/encargado/dashboard.xhtml?faces-redirect=true";
                 case JEFE_AREA:
                     return "/jefe/dashboard.xhtml?faces-redirect=true";
-                case LOGISTICA:
-                    return "/logistica/dashboard.xhtml?faces-redirect=true";
+                case EMPLEADO_COMPRAS:
+                    return "/compras/dashboard.xhtml?faces-redirect=true";
                 case ADMINISTRADOR:
                     return "/admin/dashboard.xhtml?faces-redirect=true";
                 default:

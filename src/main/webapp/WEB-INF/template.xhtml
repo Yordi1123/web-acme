@@ -226,10 +226,10 @@
         <c:set var="roleIcon" value="pi pi-briefcase" />
         <c:set var="roleLabel" value="Jefe de Área" />
     </c:if>
-    <c:if test="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA'}">
-        <c:set var="headerClass" value="header header-logistica" />
-        <c:set var="roleIcon" value="pi pi-truck" />
-        <c:set var="roleLabel" value="Logística" />
+    <c:if test="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS'}">
+        <c:set var="headerClass" value="header header-compras" />
+        <c:set var="roleIcon" value="pi pi-shopping-cart" />
+        <c:set var="roleLabel" value="Empleado de Compras" />
     </c:if>
     <c:if test="#{loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
         <c:set var="headerClass" value="header header-admin" />
@@ -275,7 +275,7 @@
 
                     <!-- Almacén - Logística y Admin -->
                     <p:submenu label="Almacén"
-                        rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
+                        rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
                         <p:menuitem value="Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-box" />
                         <p:menuitem value="Grupos" outcome="/almacen/grupos.xhtml" icon="pi pi-tags" />
                         <p:menuitem value="Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-th-large" />
@@ -296,9 +296,9 @@
                         <p:menuitem value="Aprobaciones" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file-edit"
-                            rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Pool de Compras" outcome="/compras/pool_compras.xhtml" icon="pi pi-list"
-                            rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-bar"
                             rendered="#{loginBean.usuarioLogueado.cargo ne 'ENCARGADO_OBRA'}" />
                     </p:submenu>

@@ -1,9 +1,9 @@
 package com.uns.enums;
 
 public enum RolUsuario {
-    ENCARGADO_OBRA("Encargado Obra"),
-    JEFE_AREA("Jefe Area"),
-    LOGISTICA("Logística"),
+    ENCARGADO_OBRA("Encargado de Obra"),
+    JEFE_AREA("Jefe de Área"),
+    EMPLEADO_COMPRAS("Empleado de Compras"),
     ADMINISTRADOR("Administrador");
 
     private final String label;

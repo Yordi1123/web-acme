@@ -71,4 +71,21 @@ public class UsuarioDAO {
         }
         return usuario;
     }
+
+    public List<Usuario> findByRol(com.uns.enums.RolUsuario rol) {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<Usuario> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT u FROM Usuario u LEFT JOIN FETCH u.areaNegocio WHERE u.cargo = :rol AND u.estado = 'Activo' ORDER BY u.nombreCompleto", 
+                Usuario.class)
+                .setParameter("rol", rol)
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en UsuarioDAO.findByRol: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
 }

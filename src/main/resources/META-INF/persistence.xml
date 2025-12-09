@@ -11,6 +11,7 @@
         <class>com.uns.entities.Proveedor</class>
         <class>com.uns.entities.Proyecto</class>
         <class>com.uns.entities.CentroCosto</class>
+        <class>com.uns.entities.AreaNegocio</class>
         <class>com.uns.entities.Requerimiento</class>
         <class>com.uns.entities.DetalleRequerimiento</class>
         <class>com.uns.entities.OrdenCompra</class>

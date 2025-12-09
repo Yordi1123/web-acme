@@ -43,6 +43,17 @@ public class Requerimiento implements Serializable {
     @OneToMany(mappedBy = "requerimiento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private java.util.List<DetalleRequerimiento> detalles = new java.util.ArrayList<>();
 
+    @Column
+    private Integer etapa;
+
+    @ManyToOne
+    @JoinColumn(name = "id_area_negocio")
+    private AreaNegocio areaNegocio;
+
+    @ManyToOne
+    @JoinColumn(name = "id_jefe_aprobador")
+    private Usuario jefeAprobador;
+
     public Requerimiento() {
     }
 
@@ -72,6 +83,15 @@ public class Requerimiento implements Serializable {
 
     public java.util.List<DetalleRequerimiento> getDetalles() { return detalles; }
     public void setDetalles(java.util.List<DetalleRequerimiento> detalles) { this.detalles = detalles; }
+
+    public Integer getEtapa() { return etapa; }
+    public void setEtapa(Integer etapa) { this.etapa = etapa; }
+
+    public AreaNegocio getAreaNegocio() { return areaNegocio; }
+    public void setAreaNegocio(AreaNegocio areaNegocio) { this.areaNegocio = areaNegocio; }
+
+    public Usuario getJefeAprobador() { return jefeAprobador; }
+    public void setJefeAprobador(Usuario jefeAprobador) { this.jefeAprobador = jefeAprobador; }
 
     @Override
     public int hashCode() {

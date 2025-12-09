@@ -30,6 +30,10 @@ public class Usuario implements Serializable {
     @Column(columnDefinition = "ENUM('Activo', 'Inactivo')")
     private String estado;
 
+    @ManyToOne
+    @JoinColumn(name = "id_area_negocio")
+    private AreaNegocio areaNegocio;
+
     public Usuario() {
     }
 
@@ -50,6 +54,9 @@ public class Usuario implements Serializable {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    public AreaNegocio getAreaNegocio() { return areaNegocio; }
+    public void setAreaNegocio(AreaNegocio areaNegocio) { this.areaNegocio = areaNegocio; }
 
     @Override
     public int hashCode() {

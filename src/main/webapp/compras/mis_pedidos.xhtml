@@ -2,144 +2,196 @@
     xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <h1>Mis Pedidos / Requerimientos</h1>
+        <h1 style="margin-bottom: 5px;"><i class="pi pi-shopping-cart" style="color: #3b82f6;"></i> Mis Pedidos</h1>
+        <p style="color: #666; margin-top: 0;">Crea y gestiona tus requerimientos de materiales</p>
 
-        <h:form id="formRegistro">
-            <p:panel header="Nuevo Requerimiento" style="margin-bottom: 20px;">
+        <h:form id="formReq">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px; margin-top: 20px;">
+                <!-- PANEL IZQUIERDO: Formulario de Cabecera -->
+                <div>
+                    <p:panel header="Nuevo Requerimiento" styleClass="shadow-2" style="height: 100%;">
+                        <p:panelGrid columns="2" layout="grid" style="width: 100%;" contentStyle="padding: 8px 5px;"
+                            columnClasses="label-col, input-col">
 
-                <!-- Cabecera -->
-                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid"
-                    style="margin-bottom: 20px;">
-                    <p:outputLabel value="Fecha:" />
-                    <h:outputText value="#{requerimientoBean.requerimiento.fechaSolicitud}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
-                    </h:outputText>
+                            <p:outputLabel value="Solicitante:" />
+                            <h:outputText value="#{loginBean.usuarioLogueado.nombreCompleto}"
+                                style="font-weight: bold; color: #2563eb;" />
 
-                    <p:outputLabel value="Usuario:" />
-                    <h:outputText value="#{requerimientoBean.requerimiento.usuarioSolicitante.username}"
-                        style="font-weight: bold;" />
+                            <p:outputLabel value="Fecha:" />
+                            <h:outputText value="#{requerimientoBean.requerimiento.fechaSolicitud}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                            </h:outputText>
 
-                    <p:outputLabel value="Proyecto:" for="proy" />
-                    <p:selectOneMenu id="proy" value="#{requerimientoBean.requerimiento.proyecto}"
-                        converter="omnifaces.SelectItemsConverter" required="true">
-                        <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
-                        <f:selectItems value="#{requerimientoBean.listaProyectos}" var="p" itemLabel="#{p.nombre}"
-                            itemValue="#{p}" />
-                    </p:selectOneMenu>
+                            <p:outputLabel value="Área de Negocio:" for="area" />
+                            <p:selectOneMenu id="area" value="#{requerimientoBean.requerimiento.areaNegocio}"
+                                converter="omnifaces.SelectItemsConverter" required="true" style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                <f:selectItems value="#{requerimientoBean.listaAreasNegocio}" var="a"
+                                    itemLabel="#{a.prefijo} - #{a.nombre}" itemValue="#{a}" />
+                                <p:ajax listener="#{requerimientoBean.onAreaChange}" update="jefe" />
+                            </p:selectOneMenu>
 
-                    <p:outputLabel value="Centro de Costo:" for="cc" />
-                    <p:selectOneMenu id="cc" value="#{requerimientoBean.requerimiento.centroCosto}"
-                        converter="omnifaces.SelectItemsConverter" required="true">
-                        <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
-                        <f:selectItems value="#{requerimientoBean.listaCentrosCosto}" var="c" itemLabel="#{c.nombre}"
-                            itemValue="#{c}" />
-                    </p:selectOneMenu>
+                            <p:outputLabel value="Jefe Aprobador:" for="jefe" />
+                            <p:selectOneMenu id="jefe" value="#{requerimientoBean.requerimiento.jefeAprobador}"
+                                converter="omnifaces.SelectItemsConverter" required="true" style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                <f:selectItems value="#{requerimientoBean.listaJefes}" var="j"
+                                    itemLabel="#{j.nombreCompleto}" itemValue="#{j}" />
+                            </p:selectOneMenu>
 
-                    <p:outputLabel value="Observación:" for="obs" />
-                    <p:inputTextarea id="obs" value="#{requerimientoBean.requerimiento.observacion}" rows="1"
-                        autoResize="false" />
-                </p:panelGrid>
+                            <p:outputLabel value="Proyecto:" for="proy" />
+                            <p:selectOneMenu id="proy" value="#{requerimientoBean.requerimiento.proyecto}"
+                                converter="omnifaces.SelectItemsConverter" required="true" style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                <f:selectItems value="#{requerimientoBean.listaProyectos}" var="p"
+                                    itemLabel="#{p.codigo} - #{p.nombre}" itemValue="#{p}" />
+                            </p:selectOneMenu>
 
-                <p:divider />
+                            <p:outputLabel value="Etapa:" for="etapa" />
+                            <p:selectOneMenu id="etapa" value="#{requerimientoBean.requerimiento.etapa}" required="true"
+                                style="width: 100%;">
+                                <f:selectItem itemLabel="Etapa 1" itemValue="1" />
+                                <f:selectItem itemLabel="Etapa 2" itemValue="2" />
+                                <f:selectItem itemLabel="Etapa 3" itemValue="3" />
+                            </p:selectOneMenu>
 
-                <!-- Detalle (Agregar Items) -->
-                <h5>Agregar Materiales</h5>
-                <p:panelGrid columns="3" layout="flex" contentStyleClass="p-align-end ui-fluid">
-                    <p:outputLabel value="Material:" for="mat" />
-                    <p:selectOneMenu id="mat" value="#{requerimientoBean.idMaterialSeleccionado}" filter="true"
-                        filterMatchMode="contains">
-                        <f:selectItem itemLabel="-- Buscar Material --" itemValue="" />
-                        <f:selectItems value="#{requerimientoBean.listaMateriales}" var="m"
-                            itemLabel="#{m.nombre} - #{m.codCorrelativo}" itemValue="#{m.id}" />
-                    </p:selectOneMenu>
+                            <p:outputLabel value="Centro de Costo:" for="cc" />
+                            <p:selectOneMenu id="cc" value="#{requerimientoBean.requerimiento.centroCosto}"
+                                converter="omnifaces.SelectItemsConverter" required="true" style="width: 100%;">
+                                <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                                <f:selectItems value="#{requerimientoBean.listaCentrosCosto}" var="c"
+                                    itemLabel="#{c.codigo} - #{c.nombre}" itemValue="#{c}" />
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                    </p:panel>
+                </div>
 
-                    <p:outputLabel value="Cantidad:" for="cant" />
-                    <p:inputNumber id="cant" value="#{requerimientoBean.detalle.cantidadSolicitada}"
-                        decimalPlaces="2" />
+                <!-- PANEL DERECHO: Items del Requerimiento -->
+                <div>
+                    <p:panel header="Items del Requerimiento" styleClass="shadow-2">
+                        <!-- Formulario para agregar item -->
+                        <div
+                            style="display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; margin-bottom: 15px; align-items: end;">
+                            <div>
+                                <label style="font-weight: 500; display: block; margin-bottom: 5px;">Material</label>
+                                <p:selectOneMenu value="#{requerimientoBean.idMaterialSeleccionado}" filter="true"
+                                    filterMatchMode="contains" style="width: 100%;">
+                                    <f:selectItem itemLabel="-- Buscar material --" itemValue="" />
+                                    <f:selectItems value="#{requerimientoBean.listaMateriales}" var="m"
+                                        itemLabel="#{m.nombre} (#{m.unidad.abreviatura})" itemValue="#{m.id}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div>
+                                <label style="font-weight: 500; display: block; margin-bottom: 5px;">Cantidad</label>
+                                <p:inputNumber value="#{requerimientoBean.detalle.cantidadSolicitada}" decimalPlaces="2"
+                                    minValue="0.01" style="width: 100%;" />
+                            </div>
+                            <p:commandButton value="Agregar" icon="pi pi-plus"
+                                actionListener="#{requerimientoBean.agregarDetalle}" update="tablaItems"
+                                styleClass="ui-button-success" style="height: 40px;" />
+                        </div>
 
-                    <p:commandButton value="Agregar Item" icon="pi pi-plus"
-                        actionListener="#{requerimientoBean.agregarDetalle}" update="tablaDetalles mat cant"
-                        process="@this mat cant" styleClass="ui-button-secondary" />
-                </p:panelGrid>
+                        <!-- Tabla de items agregados -->
+                        <p:dataTable id="tablaItems" value="#{requerimientoBean.detalles}" var="d"
+                            emptyMessage="No hay items agregados" stripedRows="true" size="small">
+                            <p:column headerText="#" width="40">
+                                <h:outputText value="#{d_rowIndex + 1}" />
+                            </p:column>
+                            <p:column headerText="Material">
+                                <h:outputText value="#{d.material.nombre}" />
+                            </p:column>
+                            <p:column headerText="Unidad" width="80">
+                                <h:outputText value="#{d.material.unidad.abreviatura}" />
+                            </p:column>
+                            <p:column headerText="Cantidad" width="100" style="text-align: right;">
+                                <h:outputText value="#{d.cantidadSolicitada}">
+                                    <f:convertNumber minFractionDigits="2" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="" width="50">
+                                <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger ui-button-sm"
+                                    actionListener="#{requerimientoBean.eliminarDetalle(d)}" update="tablaItems" />
+                            </p:column>
+                        </p:dataTable>
 
-                <p:dataTable id="tablaDetalles" value="#{requerimientoBean.detalles}" var="d"
-                    emptyMessage="No hay materiales agregados" style="margin-top: 10px;">
-                    <p:column headerText="Material">
-                        <h:outputText value="#{d.material.nombre}" />
+                        <div style="text-align: right; margin-top: 15px;">
+                            <p:commandButton value="Limpiar" icon="pi pi-refresh"
+                                actionListener="#{requerimientoBean.nuevoRequerimiento}" update=":formReq"
+                                styleClass="ui-button-secondary" style="margin-right: 10px;" />
+                            <p:commandButton value="Guardar Requerimiento" icon="pi pi-save"
+                                actionListener="#{requerimientoBean.guardar}" update=":formReq :msgs"
+                                styleClass="ui-button-success" />
+                        </div>
+                    </p:panel>
+                </div>
+            </div>
+
+            <!-- TABLA DE MIS REQUERIMIENTOS -->
+            <p:panel header="Mis Requerimientos Recientes" style="margin-top: 25px;" styleClass="shadow-2">
+                <p:dataTable value="#{requerimientoBean.requerimientos}" var="r" paginator="true" rows="10"
+                    stripedRows="true" emptyMessage="No tienes requerimientos registrados">
+
+                    <p:column headerText="ID" width="60">
+                        <h:outputText value="#{r.id}" />
                     </p:column>
-                    <p:column headerText="Unidad">
-                        <h:outputText value="#{d.material.unidad.abreviatura}" />
+                    <p:column headerText="Fecha" width="100">
+                        <h:outputText value="#{r.fechaSolicitud}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                        </h:outputText>
                     </p:column>
-                    <p:column headerText="Cantidad">
-                        <h:outputText value="#{d.cantidadSolicitada}" />
+                    <p:column headerText="Área">
+                        <h:outputText value="#{r.areaNegocio.prefijo}" rendered="#{r.areaNegocio ne null}" />
                     </p:column>
-                    <p:column width="50">
-                        <p:commandButton icon="pi pi-trash" actionListener="#{requerimientoBean.eliminarDetalle(d)}"
-                            update="tablaDetalles" process="@this"
-                            styleClass="ui-button-danger ui-button-flat rounded-button" />
+                    <p:column headerText="Proyecto">
+                        <h:outputText value="#{r.proyecto.nombre}" />
+                    </p:column>
+                    <p:column headerText="C.Costo" width="80">
+                        <h:outputText value="#{r.centroCosto.codigo}" />
+                    </p:column>
+                    <p:column headerText="Etapa" width="60" style="text-align: center;">
+                        <p:badge value="#{r.etapa}" severity="info" />
+                    </p:column>
+                    <p:column headerText="Items" width="60" style="text-align: center;">
+                        <p:badge value="#{r.detalles.size()}" />
+                    </p:column>
+                    <p:column headerText="Estado" width="120">
+                        <p:badge value="#{r.estado.label}"
+                            severity="#{r.estado eq 'APROBADO' ? 'success' : (r.estado eq 'RECHAZADO' ? 'danger' : (r.estado eq 'OBSERVADO' ? 'warning' : 'info'))}" />
+                    </p:column>
+                    <p:column headerText="Acciones" width="130" style="text-align: center;">
+                        <p:commandButton icon="pi pi-pencil" styleClass="ui-button-sm"
+                            actionListener="#{requerimientoBean.seleccionarParaEditar(r)}" update=":formReq"
+                            title="Editar" rendered="#{requerimientoBean.puedeEditar(r)}" />
+                        <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger ui-button-sm"
+                            actionListener="#{requerimientoBean.eliminar(r)}" update=":formReq :msgs" title="Eliminar"
+                            rendered="#{requerimientoBean.puedeEditar(r)}" style="margin-left: 5px;">
+                            <p:confirm header="Confirmar" message="¿Eliminar este requerimiento?"
+                                icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
                     </p:column>
                 </p:dataTable>
-
-                <f:facet name="footer">
-                    <p:commandButton value="Enviar Requerimiento" icon="pi pi-send"
-                        actionListener="#{requerimientoBean.guardar}" update=":formHistory:tablaReq :formRegistro"
-                        styleClass="ui-button-primary" style="width: 100%; margin-top: 10px;" />
-                </f:facet>
             </p:panel>
-        </h:form>
 
-        <!-- Historial -->
-        <h:form id="formHistory">
-            <h3>Mis Requerimientos Recientes</h3>
-            <p:dataTable id="tablaReq" value="#{requerimientoBean.requerimientos}" var="r" paginator="true" rows="5"
-                stripedRows="true" sortMode="single" rowKey="#{r.id}">
-
-                <p:column headerText="ID" width="50">
-                    <h:outputText value="#{r.id}" />
-                </p:column>
-
-                <p:column headerText="Fecha" sortBy="#{r.fechaSolicitud}">
-                    <h:outputText value="#{r.fechaSolicitud}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
-                    </h:outputText>
-                </p:column>
-
-                <p:column headerText="Proyecto">
-                    <h:outputText value="#{r.proyecto.nombre}" />
-                </p:column>
-
-                <p:column headerText="C.Costo">
-                    <h:outputText value="#{r.centroCosto.codigo}" />
-                </p:column>
-
-                <p:column headerText="Estado">
-                    <span class="badge #{r.estado eq 'APROBADO' ? 'badge-success' : 
-                                        (r.estado eq 'RECHAZADO' ? 'badge-danger' : 
-                                        (r.estado eq 'OBSERVADO' ? 'badge-info' : 
-                                        (r.estado eq 'ATENDIDO_TOTAL' ? 'badge-success' : 'badge-warning')))}">
-                        #{r.estado.label}
-                    </span>
-                </p:column>
-
-                <p:column headerText="Acciones" width="120">
-                    <p:commandButton icon="pi pi-pencil" title="Editar"
-                        actionListener="#{requerimientoBean.seleccionarParaEditar(r)}" update=":formRegistro"
-                        process="@this" styleClass="ui-button-warning ui-button-flat rounded-button"
-                        rendered="#{requerimientoBean.puedeEditar(r)}" />
-                    <p:commandButton icon="pi pi-trash" title="Eliminar"
-                        actionListener="#{requerimientoBean.eliminar(r)}" update="tablaReq" process="@this"
-                        styleClass="ui-button-danger ui-button-flat rounded-button"
-                        rendered="#{requerimientoBean.puedeEditar(r)}">
-                        <p:confirm header="Confirmar" message="¿Eliminar este requerimiento?"
-                            icon="pi pi-exclamation-triangle" />
-                    </p:commandButton>
-                </p:column>
-            </p:dataTable>
-            <p:confirmDialog global="true">
-                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
-                    icon="pi pi-times" />
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes ui-button-danger"
+                    icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
             </p:confirmDialog>
         </h:form>
+
+        <style>
+            .label-col {
+                width: 35%;
+                font-weight: 500;
+            }
+
+            .input-col {
+                width: 65%;
+            }
+
+            .shadow-2 {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        </style>
     </ui:define>
 </ui:composition>
