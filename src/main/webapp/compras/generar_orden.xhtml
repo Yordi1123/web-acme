@@ -48,22 +48,41 @@
                         style="font-weight: bold;" />
                 </p:panelGrid>
 
-                <p:dataTable value="#{comprasBean.detalles}" var="d" style="margin-bottom: 20px;">
+                <p:dataTable value="#{comprasBean.detalles}" var="d" style="margin-bottom: 20px;"
+                    emptyMessage="No hay items cargados">
                     <p:column headerText="Material">
                         <h:outputText value="#{d.detalleRequerimiento.material.nombre}" />
                     </p:column>
-                    <p:column headerText="Cantidad">
-                        <h:outputText value="#{d.cantidad}" />
+                    <p:column headerText="Unidad" width="80">
+                        <h:outputText value="#{d.detalleRequerimiento.material.unidad.abreviatura}" />
+                    </p:column>
+                    <p:column headerText="Cantidad Solicitada" width="130" style="text-align: right;">
+                        <h:outputText value="#{d.detalleRequerimiento.cantidadSolicitada}">
+                            <f:convertNumber minFractionDigits="2" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Cantidad a Comprar" width="150">
+                        <p:inputNumber value="#{d.cantidad}" decimalPlaces="2" required="true" minValue="0.01"
+                            maxValue="#{d.detalleRequerimiento.cantidadPendiente}" />
                     </p:column>
                     <p:column headerText="Precio Unit." width="150">
-                        <p:inputNumber value="#{d.precioUnitario}" symbol="S/ " decimalPlaces="2" required="true" />
+                        <p:inputNumber value="#{d.precioUnitario}" symbol="S/ " decimalPlaces="2" required="true"
+                            minValue="0.01" />
                     </p:column>
                 </p:dataTable>
 
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="width: 300px; margin-left: auto;">
+                    <p:outputLabel value="Lugar de Entrega:" />
+                    <p:inputText value="#{comprasBean.ordenCompra.lugarEntrega}" placeholder="Dirección..." />
+
+                    <p:outputLabel value="Observaciones:" />
+                    <p:inputTextarea value="#{comprasBean.ordenCompra.observaciones}" rows="2" />
+                </p:panelGrid>
+
                 <f:facet name="footer">
                     <p:commandButton value="Generar Orden" icon="pi pi-check"
-                        actionListener="#{comprasBean.generarOrden}" update=":formGenerar"
-                        styleClass="ui-button-success" />
+                        actionListener="#{comprasBean.generarOrden}" update=":formGenerar :msgs"
+                        styleClass="ui-button-success" style="width: 100%;" />
                 </f:facet>
             </p:panel>
         </h:form>

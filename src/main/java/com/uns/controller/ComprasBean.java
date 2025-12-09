@@ -91,10 +91,32 @@ public class ComprasBean implements Serializable {
     }
 
     public void generarOrden() {
+        if (detalles == null || detalles.isEmpty()) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error", "No hay items en la orden"));
+            return;
+        }
+        
         try {
             jakarta.persistence.EntityManager em = com.uns.config.JPAFactory.getEntityManager();
             try {
                 em.getTransaction().begin();
+
+                // Calcular totales
+                java.math.BigDecimal subTotal = java.math.BigDecimal.ZERO;
+                for (DetalleOrden det : detalles) {
+                    java.math.BigDecimal importe = det.getCantidad().multiply(det.getPrecioUnitario());
+                    subTotal = subTotal.add(importe);
+                }
+                java.math.BigDecimal igvRate = new java.math.BigDecimal("0.18");
+                java.math.BigDecimal igv = subTotal.multiply(igvRate);
+                java.math.BigDecimal total = subTotal.add(igv);
+                
+                ordenCompra.setSubTotal(subTotal);
+                ordenCompra.setIgv(igv);
+                ordenCompra.setTotal(total);
 
                 if (ordenCompra.getId() == null) {
                     em.persist(ordenCompra);
@@ -102,36 +124,104 @@ public class ComprasBean implements Serializable {
                     em.merge(ordenCompra);
                 }
                 
-                // Detalles
+                // Guardar detalles y ACTUALIZAR cantidadAtendida en requerimientos originales
+                java.util.Set<Long> requerimientosAfectados = new java.util.HashSet<>();
+                
                 for (DetalleOrden det : detalles) {
                     det.setOrdenCompra(ordenCompra);
-                    // Recalcular importe si no es automatico (pero es generated column segun entity, asi que no setImporte)
-                    // Si el entity tiene 'insertable=false' JPA lo ignora.
                     em.persist(det);
+                    
+                    // ALGORITMO CRÍTICO: Actualizar cantidadAtendida
+                    com.uns.entities.DetalleRequerimiento reqItem = det.getDetalleRequerimiento();
+                    if (reqItem != null) {
+                        // Recargar para asegurar datos frescos
+                        reqItem = em.find(com.uns.entities.DetalleRequerimiento.class, reqItem.getId());
+                        
+                        java.math.BigDecimal atendidoActual = reqItem.getCantidadAtendida();
+                        if (atendidoActual == null) atendidoActual = java.math.BigDecimal.ZERO;
+                        
+                        java.math.BigDecimal nuevoAtendido = atendidoActual.add(det.getCantidad());
+                        reqItem.setCantidadAtendida(nuevoAtendido);
+                        em.merge(reqItem);
+                        
+                        // Guardar ID del requerimiento para verificar completitud después
+                        requerimientosAfectados.add(reqItem.getRequerimiento().getId());
+                    }
                 }
                 
-                // Actualizar estado requerimiento? (Opcional: ATENDIDO_TOTAL)
-                if (requerimientoSeleccionado != null) {
-                     requerimientoSeleccionado.setEstado(com.uns.enums.EstadoRequerimiento.ATENDIDO_TOTAL);
-                     // EstadoRequerimiento: PENDIENTE, OBSERVADO, APROBADO, EN_ATENCION, ATENDIDO_TOTAL, RECHAZADO
-                     // Check spelling in Enum definition
-                     em.merge(requerimientoSeleccionado);
+                // VERIFICAR COMPLETITUD de cada requerimiento afectado
+                for (Long reqId : requerimientosAfectados) {
+                    verificarYActualizarEstadoRequerimiento(em, reqId);
                 }
                 
                 em.getTransaction().commit();
                 
+                jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                        "Éxito", "Orden de Compra generada correctamente"));
+                
                 listaOrdenes = ordenCompraDAO.findAll();
-                cargarRequerimientosAprobados(); // Refresh list
+                cargarRequerimientosAprobados();
                 nuevaOrden();
+                
             } catch (Exception e) {
                 em.getTransaction().rollback();
                 e.printStackTrace();
+                jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                        "Error", "No se pudo generar la orden: " + e.getMessage()));
             } finally {
                 em.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Verifica si todos los items de un requerimiento han sido atendidos.
+     * Si es así, cambia el estado a ATENDIDO_TOTAL.
+     * Si al menos uno fue atendido parcialmente, cambia a EN_ATENCION.
+     */
+    private void verificarYActualizarEstadoRequerimiento(jakarta.persistence.EntityManager em, Long reqId) {
+        com.uns.entities.Requerimiento req = em.find(com.uns.entities.Requerimiento.class, reqId);
+        if (req == null) return;
+        
+        // Cargar detalles frescos
+        java.util.List<com.uns.entities.DetalleRequerimiento> items = 
+            em.createQuery("SELECT d FROM DetalleRequerimiento d WHERE d.requerimiento.id = :id", 
+                com.uns.entities.DetalleRequerimiento.class)
+            .setParameter("id", reqId)
+            .getResultList();
+        
+        boolean todosCompletos = true;
+        boolean algunoAtendido = false;
+        
+        for (com.uns.entities.DetalleRequerimiento item : items) {
+            java.math.BigDecimal atendida = item.getCantidadAtendida();
+            if (atendida == null) atendida = java.math.BigDecimal.ZERO;
+            
+            if (atendida.compareTo(item.getCantidadSolicitada()) >= 0) {
+                algunoAtendido = true;
+            } else if (atendida.compareTo(java.math.BigDecimal.ZERO) > 0) {
+                algunoAtendido = true;
+                todosCompletos = false;
+            } else {
+                todosCompletos = false;
+            }
+        }
+        
+        // Actualizar estado según resultado
+        if (todosCompletos && algunoAtendido) {
+            req.setEstado(com.uns.enums.EstadoRequerimiento.ATENDIDO_TOTAL);
+        } else if (algunoAtendido) {
+            req.setEstado(com.uns.enums.EstadoRequerimiento.EN_ATENCION);
+        }
+        // Si no hay ninguno atendido, mantener APROBADO
+        
+        em.merge(req);
     }
     
     // Getters y Setters
