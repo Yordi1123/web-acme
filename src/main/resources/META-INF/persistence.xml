@@ -7,6 +7,14 @@
         <class>com.uns.entities.Unidad</class>
         <class>com.uns.entities.Grupo</class>
         <class>com.uns.entities.Material</class>
+        <class>com.uns.entities.Usuario</class>
+        <class>com.uns.entities.Proveedor</class>
+        <class>com.uns.entities.Proyecto</class>
+        <class>com.uns.entities.CentroCosto</class>
+        <class>com.uns.entities.Requerimiento</class>
+        <class>com.uns.entities.DetalleRequerimiento</class>
+        <class>com.uns.entities.OrdenCompra</class>
+        <class>com.uns.entities.DetalleOrden</class>
         
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/dbprueba?zeroDateTimeBehavior=convertToNull&amp;useSSL=false&amp;allowPublicKeyRetrieval=true"/>

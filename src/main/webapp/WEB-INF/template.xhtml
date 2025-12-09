@@ -69,7 +69,7 @@
         <h:form>
             <p:outputLabel value="Bienvenido, #{loginBean.usuarioLogueado.username}" style="margin-right: 10px;"
                 rendered="#{loginBean.loggedIn}" />
-            <p:commandButton value="Salir" action="#{loginBean.logout}" icon="pi pi-sign-out"
+            <p:commandButton value="Salir" action="#{loginBean.cerrarSesion}" icon="pi pi-sign-out"
                 styleClass="ui-button-flat ui-button-plain" rendered="#{loginBean.loggedIn}" />
         </h:form>
     </div>
@@ -79,27 +79,40 @@
             <h:form>
                 <p:menu toggleable="true">
                     <p:submenu label="General">
-                        <p:menuitem value="Dashboard" outcome="/index.xhtml" icon="pi pi-home" />
+                        <p:menuitem value="Inicio" outcome="/index.xhtml" icon="pi pi-home" />
                     </p:submenu>
 
-                    <p:submenu label="Almacén">
+                    <!-- Solo Logística puede ver Almacén (Suposición lógica) -->
+                    <p:submenu label="Almacén" rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA'}">
                         <p:menuitem value="Grupos" outcome="/almacen/grupos.xhtml" icon="pi pi-tags" />
                         <p:menuitem value="Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-box" />
                         <p:menuitem value="Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-briefcase" />
                     </p:submenu>
 
-                    <p:submenu label="Maestros">
+                    <!-- Solo Jefe puede ver Maestros -->
+                    <p:submenu label="Maestros" rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
                         <p:menuitem value="Proyectos" outcome="/maestros/proyectos.xhtml" icon="pi pi-building" />
                         <p:menuitem value="Proveedores" outcome="/maestros/proveedores.xhtml" icon="pi pi-truck" />
                         <p:menuitem value="Usuarios" outcome="/maestros/usuarios.xhtml" icon="pi pi-users" />
                     </p:submenu>
 
-                    <p:submenu label="Compras">
-                        <p:menuitem value="Mis Pedidos" outcome="/compras/mis_pedidos.xhtml"
-                            icon="pi pi-shopping-cart" />
-                        <p:menuitem value="Aprobación" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle" />
-                        <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file" />
-                        <p:menuitem value="Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-bar" />
+                    <!-- Compras: Visibilidad mixta -->
+                    <p:submenu label="Compras" rendered="#{loginBean.loggedIn}">
+                        <!-- Encargado crea pedidos -->
+                        <p:menuitem value="Mis Pedidos" outcome="/compras/mis_pedidos.xhtml" icon="pi pi-shopping-cart"
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA'}" />
+
+                        <!-- Jefe aprueba -->
+                        <p:menuitem value="Aprobación" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle"
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}" />
+
+                        <!-- Logística genera ordenes -->
+                        <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file"
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA'}" />
+
+                        <!-- Todos o Logística/Jefe ven reportes? Digamos Jefe y Logistica -->
+                        <p:menuitem value="Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-bar"
+                            rendered="#{loginBean.usuarioLogueado.cargo ne 'ENCARGADO_OBRA'}" />
                     </p:submenu>
                 </p:menu>
             </h:form>

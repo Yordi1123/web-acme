@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Login - ACME</title>
+    <style>
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+    </style>
+</h:head>
+<h:body>
+    <h:form>
+        <p:growl id="growl" showDetail="true" />
+
+        <p:card style="width: 350px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <div style="margin-bottom: 20px;">
+                <i class="pi pi-user" style="font-size: 3rem; color: #2196F3;"></i>
+                <h2>Iniciar Sesión</h2>
+            </div>
+
+            <div class="ui-fluid">
+                <div class="p-field" style="margin-bottom: 15px; text-align: left;">
+                    <p:outputLabel for="username" value="Usuario" />
+                    <p:inputText id="username" value="#{loginBean.username}" required="true"
+                        placeholder="Ingrese su usuario" />
+                </div>
+
+                <div class="p-field" style="margin-bottom: 25px; text-align: left;">
+                    <p:outputLabel for="password" value="Contraseña" />
+                    <p:password id="password" value="#{loginBean.password}" required="true" toggleMask="true"
+                        placeholder="Ingrese su contraseña" />
+                </div>
+
+                <p:commandButton value="Ingresar" action="#{loginBean.iniciarSesion}" update="growl"
+                    icon="pi pi-sign-in" styleClass="ui-button-primary" style="width: 100%;" />
+            </div>
+        </p:card>
+    </h:form>
+</h:body>
+
+</html>

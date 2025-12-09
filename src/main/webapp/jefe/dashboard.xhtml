@@ -1,0 +1,13 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <f:metadata xmlns:f="jakarta.faces.core">
+            <f:viewAction action="#{loginBean.verificarSesion}" />
+        </f:metadata>
+
+        <h1>Panel de Jefe de Área</h1>
+        <p>Bienvenido al área de gestión y aprobaciones.</p>
+    </ui:define>
+
+</ui:composition>

@@ -21,12 +21,22 @@ public class LoginBean implements Serializable {
         usuarioDAO = new UsuarioDAO();
     }
 
-    public String login() {
+    public String iniciarSesion() {
         Usuario usuario = usuarioDAO.login(username, password);
         if (usuario != null) {
             usuarioLogueado = usuario;
-            // Redirigir según rol (lógica simple por ahora)
-            return "dashboard?faces-redirect=true";
+            
+            // Lógica de Redirección según Rol
+            switch (usuario.getCargo()) {
+                case ENCARGADO_OBRA:
+                    return "/encargado/dashboard?faces-redirect=true";
+                case JEFE_AREA:
+                    return "/jefe/dashboard?faces-redirect=true";
+                case LOGISTICA:
+                    return "/logistica/dashboard?faces-redirect=true";
+                default:
+                     return "index.xhtml?faces-redirect=true";
+            }
         } else {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Usuario o contraseña incorrectos"));
@@ -34,13 +44,24 @@ public class LoginBean implements Serializable {
         }
     }
 
-    public String logout() {
+    public String cerrarSesion() {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-        return "login?faces-redirect=true";
+        return "/login?faces-redirect=true";
     }
 
     public boolean isLoggedIn() {
         return usuarioLogueado != null;
+    }
+    
+    public void verificarSesion() {
+        try {
+             if (usuarioLogueado == null) {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(
+                         FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/login.xhtml");
+             }
+        } catch (Exception e) {
+            // log error
+        }
     }
 
     // --- Getters y Setters ---

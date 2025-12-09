@@ -63,7 +63,6 @@ public class UsuarioDAO {
                     .setParameter("pass", password)
                     .getSingleResult();
         } catch (NoResultException e) {
-            // No encontrado
             return null;
         } catch (Exception e) {
             e.printStackTrace();
