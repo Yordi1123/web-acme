@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1><i class="pi pi-shopping-cart" style="color: #8b5cf6;"></i> Pool de Compras</h1>
+        <p style="color: #666;">Items pendientes de compra de todos los requerimientos aprobados</p>
+
+        <h:form id="formPool">
+            <p:dataTable id="tablaPool" value="#{poolComprasBean.itemsPendientes}" var="item"
+                selection="#{poolComprasBean.itemsSeleccionados}" rowKey="#{item.id}" paginator="true" rows="15"
+                stripedRows="true" emptyMessage="No hay items pendientes de compra">
+
+                <f:facet name="header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Seleccione los items para generar una Orden de Compra</span>
+                        <p:commandButton value="Generar Orden (#{poolComprasBean.itemsSeleccionados.size()})"
+                            icon="pi pi-file-edit" actionListener="#{poolComprasBean.generarOrden}"
+                            styleClass="ui-button-success" update=":msgs"
+                            disabled="#{empty poolComprasBean.itemsSeleccionados}" />
+                    </div>
+                </f:facet>
+
+                <p:column selectionMode="multiple" width="50" />
+
+                <p:column headerText="Proyecto" sortBy="#{item.requerimiento.proyecto.nombre}">
+                    <h:outputText value="#{item.requerimiento.proyecto.nombre}" />
+                </p:column>
+
+                <p:column headerText="Req #" width="60">
+                    <h:outputText value="#{item.requerimiento.id}" />
+                </p:column>
+
+                <p:column headerText="Material" sortBy="#{item.material.nombre}">
+                    <h:outputText value="#{item.material.nombre}" style="font-weight: bold;" />
+                </p:column>
+
+                <p:column headerText="Unidad" width="80">
+                    <h:outputText value="#{item.material.unidad.abreviatura}" />
+                </p:column>
+
+                <p:column headerText="Solicitado" width="100" style="text-align: right;">
+                    <h:outputText value="#{item.cantidadSolicitada}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Atendido" width="100" style="text-align: right;">
+                    <h:outputText value="#{item.cantidadAtendida != null ? item.cantidadAtendida : 0}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Pendiente" width="100"
+                    style="text-align: right; font-weight: bold; color: #dc2626;">
+                    <h:outputText value="#{item.cantidadPendiente}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Fecha Req" width="100">
+                    <h:outputText value="#{item.requerimiento.fechaSolicitud}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

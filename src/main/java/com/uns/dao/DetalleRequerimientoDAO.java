@@ -38,4 +38,33 @@ public class DetalleRequerimientoDAO {
         }
         return lista;
     }
+
+    /**
+     * Finds all DetalleRequerimiento items that are:
+     * 1. From an APROBADO Requerimiento
+     * 2. Have cantidadAtendida < cantidadSolicitada (pending to be purchased)
+     */
+    public List<DetalleRequerimiento> findPendingItems() {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<DetalleRequerimiento> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT d FROM DetalleRequerimiento d " +
+                "JOIN FETCH d.requerimiento r " +
+                "JOIN FETCH d.material m " +
+                "JOIN FETCH r.proyecto " +
+                "WHERE r.estado = :estado " +
+                "AND (d.cantidadAtendida IS NULL OR d.cantidadAtendida < d.cantidadSolicitada) " +
+                "ORDER BY r.fechaSolicitud, d.material.nombre", 
+                DetalleRequerimiento.class)
+                .setParameter("estado", com.uns.enums.EstadoRequerimiento.APROBADO)
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en DetalleRequerimientoDAO.findPendingItems: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
 }

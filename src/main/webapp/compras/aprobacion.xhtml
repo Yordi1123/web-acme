@@ -2,62 +2,102 @@
     xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <h1>Bandeja de Aprobación</h1>
+        <h1><i class="pi pi-check-circle" style="color: #22c55e;"></i> Bandeja de Aprobación</h1>
+        <p style="color: #666;">Requerimientos pendientes de aprobación</p>
 
         <h:form id="formBandeja">
-            <p:dataTable id="tablaPendientes" value="#{requerimientoBean.requerimientos}" var="r"
-                filteredValue="#{requerimientoBean.requerimientos}" globalFilterOnly="true" paginator="true" rows="10"
-                stripedRows="true">
+            <p:dataTable id="tablaPendientes" value="#{aprobacionBean.requerimientosPendientes}" var="r"
+                paginator="true" rows="10" stripedRows="true" rowKey="#{r.id}"
+                emptyMessage="No hay requerimientos pendientes de aprobación">
 
-                <f:facet name="header">
-                    <div class="flex justify-content-end">
-                        <span class="filter-container ui-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <p:inputText id="globalFilter" onkeyup="PF('dtReqs').filter()" placeholder="Buscar..." />
-                        </span>
-                    </div>
-                </f:facet>
-
-                <p:column headerText="ID" width="50" sortBy="#{r.id}">
+                <p:column headerText="ID" width="60" sortBy="#{r.id}">
                     <h:outputText value="#{r.id}" />
                 </p:column>
 
-                <p:column headerText="Fecha">
+                <p:column headerText="Fecha" sortBy="#{r.fechaSolicitud}">
                     <h:outputText value="#{r.fechaSolicitud}">
                         <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
                     </h:outputText>
                 </p:column>
 
-                <p:column headerText="Solicitante" filterBy="#{r.usuarioSolicitante.username}">
-                    <h:outputText value="#{r.usuarioSolicitante.username}" />
+                <p:column headerText="Solicitante">
+                    <h:outputText value="#{r.usuarioSolicitante.nombreCompleto}" />
                 </p:column>
 
                 <p:column headerText="Proyecto">
                     <h:outputText value="#{r.proyecto.nombre}" />
                 </p:column>
 
-                <p:column headerText="CC">
-                    <h:outputText value="#{r.centroCosto.nombre}" />
+                <p:column headerText="C.Costo">
+                    <h:outputText value="#{r.centroCosto.codigo} - #{r.centroCosto.nombre}" />
                 </p:column>
 
-                <p:column headerText="Estado" filterBy="#{r.estado}">
-                    <span
-                        class="badge #{r.estado eq 'APROBADO' ? 'badge-success' : (r.estado eq 'RECHAZADO' ? 'badge-danger' : 'badge-warning')}">
-                        #{r.estado}
-                    </span>
+                <p:column headerText="Items">
+                    <p:badge value="#{r.detalles.size()}" severity="info" />
                 </p:column>
 
-                <p:column headerText="Acciones" style="text-align: center;">
+                <p:column headerText="Acciones" style="text-align: center; width: 180px;">
                     <p:commandButton icon="pi pi-check" styleClass="rounded-button ui-button-success"
-                        actionListener="#{requerimientoBean.aprobar(r)}" update="tablaPendientes"
-                        disabled="#{r.estado ne 'PENDIENTE'}" title="Aprobar" />
+                        actionListener="#{aprobacionBean.aprobar(r)}" update="tablaPendientes :msgs" title="Aprobar" />
 
-                    <p:commandButton icon="pi pi-times" styleClass="rounded-button ui-button-danger ml-2"
-                        actionListener="#{requerimientoBean.rechazar(r)}" update="tablaPendientes"
-                        disabled="#{r.estado ne 'PENDIENTE'}" title="Rechazar" style="margin-left: 5px;" />
+                    <p:commandButton icon="pi pi-eye" styleClass="rounded-button ui-button-warning"
+                        oncomplete="PF('dlgObservar').show()" actionListener="#{aprobacionBean.seleccionar(r)}"
+                        update=":formObservar" title="Observar" style="margin-left: 5px;" />
+
+                    <p:commandButton icon="pi pi-times" styleClass="rounded-button ui-button-danger"
+                        actionListener="#{aprobacionBean.rechazar(r)}" update="tablaPendientes :msgs" title="Rechazar"
+                        style="margin-left: 5px;">
+                        <p:confirm header="Confirmar Rechazo" message="¿Está seguro de rechazar este requerimiento?"
+                            icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
                 </p:column>
 
+                <!-- Row Expansion: Ver detalle de items -->
+                <p:rowExpansion>
+                    <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="width: 100%;">
+                        <p:outputLabel value="Observación:" />
+                        <h:outputText value="#{r.observacion}" style="font-style: italic;" />
+                    </p:panelGrid>
+                    <p:dataTable value="#{r.detalles}" var="d" style="margin-top: 10px;">
+                        <p:column headerText="Material">
+                            <h:outputText value="#{d.material.nombre}" />
+                        </p:column>
+                        <p:column headerText="Unidad">
+                            <h:outputText value="#{d.material.unidad.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Cantidad Solicitada">
+                            <h:outputText value="#{d.cantidadSolicitada}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
             </p:dataTable>
+
+            <p:confirmDialog global="true">
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                    icon="pi pi-times" />
+            </p:confirmDialog>
         </h:form>
+
+        <!-- Diálogo para Observar -->
+        <p:dialog header="Observar Requerimiento" widgetVar="dlgObservar" modal="true" width="500">
+            <h:form id="formObservar">
+                <p:panelGrid columns="1" styleClass="ui-fluid">
+                    <p:outputLabel value="Requerimiento ##{aprobacionBean.requerimientoSeleccionado.id}"
+                        style="font-weight: bold;" />
+                    <p:outputLabel value="Ingrese la observación para devolver al solicitante:" />
+                    <p:inputTextarea value="#{aprobacionBean.observacionAprobador}" rows="4"
+                        placeholder="Describa los cambios necesarios..." required="true" />
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Enviar Observación" icon="pi pi-send"
+                        actionListener="#{aprobacionBean.observar(aprobacionBean.requerimientoSeleccionado)}"
+                        update=":formBandeja:tablaPendientes :msgs" oncomplete="PF('dlgObservar').hide()"
+                        styleClass="ui-button-warning" />
+                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgObservar').hide()"
+                        type="button" styleClass="ui-button-secondary" style="margin-left: 10px;" />
+                </f:facet>
+            </h:form>
+        </p:dialog>
     </ui:define>
 </ui:composition>

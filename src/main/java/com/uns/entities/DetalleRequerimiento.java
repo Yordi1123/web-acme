@@ -47,6 +47,12 @@ public class DetalleRequerimiento implements Serializable {
     public BigDecimal getCantidadAtendida() { return cantidadAtendida; }
     public void setCantidadAtendida(BigDecimal cantidadAtendida) { this.cantidadAtendida = cantidadAtendida; }
 
+    /** Cantidad pendiente de atender = solicitada - atendida */
+    public BigDecimal getCantidadPendiente() {
+        BigDecimal atendida = cantidadAtendida != null ? cantidadAtendida : BigDecimal.ZERO;
+        return cantidadSolicitada.subtract(atendida);
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

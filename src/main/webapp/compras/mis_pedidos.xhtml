@@ -92,7 +92,7 @@
         <h:form id="formHistory">
             <h3>Mis Requerimientos Recientes</h3>
             <p:dataTable id="tablaReq" value="#{requerimientoBean.requerimientos}" var="r" paginator="true" rows="5"
-                stripedRows="true" sortMode="single">
+                stripedRows="true" sortMode="single" rowKey="#{r.id}">
 
                 <p:column headerText="ID" width="50">
                     <h:outputText value="#{r.id}" />
@@ -108,17 +108,38 @@
                     <h:outputText value="#{r.proyecto.nombre}" />
                 </p:column>
 
+                <p:column headerText="C.Costo">
+                    <h:outputText value="#{r.centroCosto.codigo}" />
+                </p:column>
+
                 <p:column headerText="Estado">
-                    <span
-                        class="badge #{r.estado eq 'APROBADO' ? 'badge-success' : (r.estado eq 'RECHAZADO' ? 'badge-danger' : 'badge-warning')}">
-                        #{r.estado}
+                    <span class="badge #{r.estado eq 'APROBADO' ? 'badge-success' : 
+                                        (r.estado eq 'RECHAZADO' ? 'badge-danger' : 
+                                        (r.estado eq 'OBSERVADO' ? 'badge-info' : 
+                                        (r.estado eq 'ATENDIDO_TOTAL' ? 'badge-success' : 'badge-warning')))}">
+                        #{r.estado.label}
                     </span>
                 </p:column>
 
-                <p:column headerText="Solicitante">
-                    <h:outputText value="#{r.usuarioSolicitante.username}" />
+                <p:column headerText="Acciones" width="120">
+                    <p:commandButton icon="pi pi-pencil" title="Editar"
+                        actionListener="#{requerimientoBean.seleccionarParaEditar(r)}" update=":formRegistro"
+                        process="@this" styleClass="ui-button-warning ui-button-flat rounded-button"
+                        rendered="#{requerimientoBean.puedeEditar(r)}" />
+                    <p:commandButton icon="pi pi-trash" title="Eliminar"
+                        actionListener="#{requerimientoBean.eliminar(r)}" update="tablaReq" process="@this"
+                        styleClass="ui-button-danger ui-button-flat rounded-button"
+                        rendered="#{requerimientoBean.puedeEditar(r)}">
+                        <p:confirm header="Confirmar" message="¿Eliminar este requerimiento?"
+                            icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
                 </p:column>
             </p:dataTable>
+            <p:confirmDialog global="true">
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                    icon="pi pi-times" />
+            </p:confirmDialog>
         </h:form>
     </ui:define>
 </ui:composition>

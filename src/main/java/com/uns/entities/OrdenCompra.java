@@ -31,6 +31,9 @@ public class OrdenCompra implements Serializable {
     @Column(name = "forma_pago", length = 50)
     private String formaPago;
 
+    @Column(name = "sub_total", precision = 12, scale = 2)
+    private BigDecimal subTotal;
+
     @Column(precision = 10, scale = 2)
     private BigDecimal igv;
 
@@ -48,6 +51,15 @@ public class OrdenCompra implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private com.uns.enums.EstadoOrden estado;
+
+    @Column(name = "lugar_entrega", length = 200)
+    private String lugarEntrega;
+
+    @Column(name = "fecha_entrega_almacen")
+    private LocalDate fechaEntregaAlmacen;
+
+    @Column(columnDefinition = "TEXT")
+    private String observaciones;
 
     public OrdenCompra() {
     }
@@ -84,6 +96,18 @@ public class OrdenCompra implements Serializable {
 
     public com.uns.enums.EstadoOrden getEstado() { return estado; }
     public void setEstado(com.uns.enums.EstadoOrden estado) { this.estado = estado; }
+
+    public BigDecimal getSubTotal() { return subTotal; }
+    public void setSubTotal(BigDecimal subTotal) { this.subTotal = subTotal; }
+
+    public String getLugarEntrega() { return lugarEntrega; }
+    public void setLugarEntrega(String lugarEntrega) { this.lugarEntrega = lugarEntrega; }
+
+    public LocalDate getFechaEntregaAlmacen() { return fechaEntregaAlmacen; }
+    public void setFechaEntregaAlmacen(LocalDate fechaEntregaAlmacen) { this.fechaEntregaAlmacen = fechaEntregaAlmacen; }
+
+    public String getObservaciones() { return observaciones; }
+    public void setObservaciones(String observaciones) { this.observaciones = observaciones; }
 
     @Override
     public int hashCode() {

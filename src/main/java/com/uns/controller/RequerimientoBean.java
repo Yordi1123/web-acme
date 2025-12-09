@@ -3,7 +3,6 @@ package com.uns.controller;
 import com.uns.dao.RequerimientoDAO;
 import com.uns.entities.DetalleRequerimiento;
 import com.uns.entities.Requerimiento;
-import com.uns.entities.Usuario;
 import com.uns.enums.EstadoRequerimiento;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -52,7 +51,15 @@ public class RequerimientoBean implements Serializable {
         listaMateriales = materialDAO.findAll();
         
         nuevoRequerimiento();
-        requerimientos = requerimientoDAO.findAll();
+        cargarMisRequerimientos();
+    }
+    
+    public void cargarMisRequerimientos() {
+        if (loginBean != null && loginBean.isLoggedIn()) {
+            requerimientos = requerimientoDAO.findByUsuario(loginBean.getUsuarioLogueado().getId());
+        } else {
+            requerimientos = new java.util.ArrayList<>();
+        }
     }
 
     public void nuevoRequerimiento() {
@@ -92,6 +99,15 @@ public class RequerimientoBean implements Serializable {
     }
 
     public void guardar() {
+        // Validación: mínimo 1 ítem
+        if (detalles == null || detalles.isEmpty()) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error", "Debe agregar al menos un ítem al requerimiento"));
+            return;
+        }
+        
         try {
             jakarta.persistence.EntityManager em = com.uns.config.JPAFactory.getEntityManager();
             try {
@@ -112,7 +128,12 @@ public class RequerimientoBean implements Serializable {
                 em.getTransaction().commit();
                 
                 nuevoRequerimiento();
-                requerimientos = requerimientoDAO.findAll();
+                cargarMisRequerimientos();
+                
+                jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                    new jakarta.faces.application.FacesMessage(
+                        jakarta.faces.application.FacesMessage.SEVERITY_INFO,
+                        "Éxito", "Requerimiento guardado correctamente"));
                 
             } catch (Exception e) {
                 em.getTransaction().rollback();
@@ -123,6 +144,41 @@ public class RequerimientoBean implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * Verifica si el requerimiento puede ser editado.
+     * Solo se permite editar en estados PENDIENTE u OBSERVADO.
+     */
+    public boolean puedeEditar(Requerimiento req) {
+        if (req == null || req.getEstado() == null) return false;
+        return req.getEstado() == EstadoRequerimiento.PENDIENTE 
+            || req.getEstado() == EstadoRequerimiento.OBSERVADO;
+    }
+    
+    public void seleccionarParaEditar(Requerimiento req) {
+        if (!puedeEditar(req)) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_WARN,
+                    "No editable", "Este requerimiento ya no puede ser modificado"));
+            return;
+        }
+        this.requerimiento = req;
+        // Cargar detalles existentes
+        this.detalles = new java.util.ArrayList<>(req.getDetalles() != null ? req.getDetalles() : java.util.Collections.emptyList());
+    }
+    
+    public void eliminar(Requerimiento req) {
+        if (!puedeEditar(req)) {
+            jakarta.faces.context.FacesContext.getCurrentInstance().addMessage(null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_WARN,
+                    "No eliminable", "Este requerimiento ya no puede ser eliminado"));
+            return;
+        }
+        requerimientoDAO.delete(req);
+        cargarMisRequerimientos();
     }
 
     // --- Actions for flow ---

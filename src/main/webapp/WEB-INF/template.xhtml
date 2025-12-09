@@ -297,6 +297,8 @@
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file-edit"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
+                        <p:menuitem value="Pool de Compras" outcome="/compras/pool_compras.xhtml" icon="pi pi-list"
+                            rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
                         <p:menuitem value="Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-bar"
                             rendered="#{loginBean.usuarioLogueado.cargo ne 'ENCARGADO_OBRA'}" />
                     </p:submenu>

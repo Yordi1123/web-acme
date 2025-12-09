@@ -26,13 +26,24 @@ CREATE TABLE IF NOT EXISTS `centro_costo` (
   `nombre` varchar(100) NOT NULL,
   `estado` enum('Activo','Inactivo') DEFAULT 'Activo',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table dbprueba.centro_costo: ~3 rows (approximately)
+-- Dumping data for table dbprueba.centro_costo: ~15 rows (approximately)
 INSERT INTO `centro_costo` (`id`, `codigo`, `nombre`, `estado`) VALUES
-	(1, '2000', 'Administración y Finanzas', 'Activo'),
-	(2, '3130', 'Urbanismo', 'Activo'),
-	(3, '3000', 'Operaciones', 'Activo');
+	(1, '2000', 'Administracion y Finanzas', 'Activo'),
+	(2, '2100', 'Contabilidad', 'Activo'),
+	(3, '2200', 'Tesoreria', 'Activo'),
+	(4, '2300', 'RRHH', 'Activo'),
+	(5, '2400', 'Administracion', 'Activo'),
+	(6, '2500', 'Legal', 'Activo'),
+	(7, '3000', 'Operaciones', 'Activo'),
+	(8, '3110', 'Planta', 'Activo'),
+	(9, '3120', 'Planta Concreto', 'Activo'),
+	(10, '3130', 'Urbanismo', 'Activo'),
+	(11, '3140', 'Mantenimiento', 'Activo'),
+	(12, '3150', 'Proyectos', 'Activo'),
+	(13, '3160', 'Logistica', 'Activo'),
+	(14, '4000', 'Comercial', 'Activo');
 
 -- Dumping structure for table dbprueba.detalle_orden
 CREATE TABLE IF NOT EXISTS `detalle_orden` (
@@ -113,11 +124,15 @@ CREATE TABLE IF NOT EXISTS `orden_compra` (
   `fecha_entrega` date DEFAULT NULL,
   `moneda` enum('Soles','Dolares') DEFAULT 'Soles',
   `forma_pago` varchar(50) DEFAULT NULL,
+  `sub_total` decimal(12,2) DEFAULT NULL,
   `igv` decimal(10,2) DEFAULT '18.00',
   `total` decimal(12,2) DEFAULT NULL,
   `id_proveedor` int NOT NULL,
   `id_usuario_compras` int NOT NULL,
   `estado` enum('Generada','Enviada','Anulada') DEFAULT 'Generada',
+  `lugar_entrega` varchar(200) DEFAULT NULL,
+  `fecha_entrega_almacen` date DEFAULT NULL,
+  `observaciones` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_proveedor` (`id_proveedor`),
   KEY `id_usuario_compras` (`id_usuario_compras`),

@@ -40,6 +40,9 @@ public class Requerimiento implements Serializable {
     @Enumerated(EnumType.STRING)
     private com.uns.enums.EstadoRequerimiento estado;
 
+    @OneToMany(mappedBy = "requerimiento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private java.util.List<DetalleRequerimiento> detalles = new java.util.ArrayList<>();
+
     public Requerimiento() {
     }
 
@@ -66,6 +69,9 @@ public class Requerimiento implements Serializable {
 
     public com.uns.enums.EstadoRequerimiento getEstado() { return estado; }
     public void setEstado(com.uns.enums.EstadoRequerimiento estado) { this.estado = estado; }
+
+    public java.util.List<DetalleRequerimiento> getDetalles() { return detalles; }
+    public void setDetalles(java.util.List<DetalleRequerimiento> detalles) { this.detalles = detalles; }
 
     @Override
     public int hashCode() {
