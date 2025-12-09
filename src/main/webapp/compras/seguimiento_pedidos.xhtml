@@ -84,6 +84,12 @@
                                    (r.estado eq 'ATENDIDO_TOTAL' ? 'success' : 'info')))}" />
                 </p:column>
 
+                <p:column headerText="Atención" width="140" style="text-align: center;">
+                    <p:badge value="#{r.estadoAtencion}" severity="#{r.severityAtencion}" />
+                    <br />
+                    <small style="color: #64748b;">#{r.porcentajeAtencion}%</small>
+                </p:column>
+
                 <!-- Row Expansion: Detalle del Requerimiento -->
                 <p:rowExpansion>
                     <div style="padding: 15px; background: #f8fafc;">

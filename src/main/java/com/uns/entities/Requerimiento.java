@@ -93,6 +93,50 @@ public class Requerimiento implements Serializable {
     public Usuario getJefeAprobador() { return jefeAprobador; }
     public void setJefeAprobador(Usuario jefeAprobador) { this.jefeAprobador = jefeAprobador; }
 
+    /**
+     * Calcula el porcentaje de atención del requerimiento.
+     * @return Porcentaje de 0 a 100
+     */
+    public double getPorcentajeAtencion() {
+        if (detalles == null || detalles.isEmpty()) return 0.0;
+        
+        java.math.BigDecimal totalSolicitado = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal totalAtendido = java.math.BigDecimal.ZERO;
+        
+        for (DetalleRequerimiento det : detalles) {
+            totalSolicitado = totalSolicitado.add(det.getCantidadSolicitada());
+            totalAtendido = totalAtendido.add(det.getCantidadAtendida() != null ? det.getCantidadAtendida() : java.math.BigDecimal.ZERO);
+        }
+        
+        if (totalSolicitado.compareTo(java.math.BigDecimal.ZERO) == 0) return 0.0;
+        
+        return totalAtendido.multiply(new java.math.BigDecimal("100"))
+                .divide(totalSolicitado, 2, java.math.RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+    
+    /**
+     * Retorna el estado de atención en texto.
+     * @return "Totalmente Atendido", "Parcialmente Atendido" o "Sin Atender"
+     */
+    public String getEstadoAtencion() {
+        double porcentaje = getPorcentajeAtencion();
+        if (porcentaje >= 100.0) return "Totalmente Atendido";
+        if (porcentaje > 0.0) return "Parcialmente Atendido";
+        return "Sin Atender";
+    }
+    
+    /**
+     * Retorna el severity para el badge de atención.
+     * @return "success", "warning" o "secondary"
+     */
+    public String getSeverityAtencion() {
+        double porcentaje = getPorcentajeAtencion();
+        if (porcentaje >= 100.0) return "success";
+        if (porcentaje > 0.0) return "warning";
+        return "secondary";
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;

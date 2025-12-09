@@ -63,6 +63,16 @@
                                     itemLabel="#{c.codigo} - #{c.nombre}" itemValue="#{c}" />
                             </p:selectOneMenu>
                         </p:panelGrid>
+
+                        <!-- Campo de Observaciones -->
+                        <div style="margin-top: 15px;">
+                            <label style="font-weight: 500; display: block; margin-bottom: 5px;">
+                                Observaciones Adicionales:
+                            </label>
+                            <p:inputTextarea id="obs" value="#{requerimientoBean.requerimiento.observacion}" rows="3"
+                                style="width: 100%;"
+                                placeholder="Ingrese cualquier observación o detalle adicional sobre este requerimiento..." />
+                        </div>
                     </p:panel>
                 </div>
 

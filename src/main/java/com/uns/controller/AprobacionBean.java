@@ -66,6 +66,25 @@ public class AprobacionBean implements Serializable {
             new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado", 
                 "Requerimiento #" + req.getId() + " rechazado"));
     }
+    
+    public void rechazarConObservacion(Requerimiento req) {
+        if (observacionAprobador == null || observacionAprobador.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN, "Atención", 
+                    "Debe ingresar el motivo del rechazo"));
+            return;
+        }
+        req.setEstado(EstadoRequerimiento.RECHAZADO);
+        // Agregar observación del rechazo
+        String obsExistente = req.getObservacion() != null ? req.getObservacion() + "\n" : "";
+        req.setObservacion(obsExistente + "[RECHAZADO] " + observacionAprobador);
+        requerimientoDAO.update(req);
+        observacionAprobador = null;
+        cargarPendientes();
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_WARN, "Rechazado", 
+                "Requerimiento #" + req.getId() + " rechazado con observación"));
+    }
 
     public void seleccionar(Requerimiento req) {
         this.requerimientoSeleccionado = req;

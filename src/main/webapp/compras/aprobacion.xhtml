@@ -45,11 +45,8 @@
                         update=":formObservar" title="Observar" style="margin-left: 5px;" />
 
                     <p:commandButton icon="pi pi-times" styleClass="rounded-button ui-button-danger"
-                        actionListener="#{aprobacionBean.rechazar(r)}" update="tablaPendientes :msgs" title="Rechazar"
-                        style="margin-left: 5px;">
-                        <p:confirm header="Confirmar Rechazo" message="¿Está seguro de rechazar este requerimiento?"
-                            icon="pi pi-exclamation-triangle" />
-                    </p:commandButton>
+                        oncomplete="PF('dlgRechazar').show()" actionListener="#{aprobacionBean.seleccionar(r)}"
+                        update=":formRechazar" title="Rechazar" style="margin-left: 5px;" />
                 </p:column>
 
                 <!-- Row Expansion: Ver detalle de items -->
@@ -96,6 +93,34 @@
                         styleClass="ui-button-warning" />
                     <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('dlgObservar').hide()"
                         type="button" styleClass="ui-button-secondary" style="margin-left: 10px;" />
+                </f:facet>
+            </h:form>
+        </p:dialog>
+
+        <!-- Diálogo para Rechazar con Observación -->
+        <p:dialog header="Rechazar Requerimiento" widgetVar="dlgRechazar" modal="true" width="500">
+            <h:form id="formRechazar">
+                <div
+                    style="background: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #dc2626;">
+                    <p style="margin: 0; color: #991b1b; font-weight: 500;">
+                        <i class="pi pi-exclamation-triangle" style="margin-right: 8px;"></i>
+                        Esta acción rechazará el requerimiento
+                    </p>
+                </div>
+                <p:panelGrid columns="1" styleClass="ui-fluid">
+                    <p:outputLabel value="Requerimiento ##{aprobacionBean.requerimientoSeleccionado.id}"
+                        style="font-weight: bold;" />
+                    <p:outputLabel value="Ingrese el motivo del rechazo (obligatorio):" />
+                    <p:inputTextarea value="#{aprobacionBean.observacionAprobador}" rows="4"
+                        placeholder="Explique por qué se rechaza este requerimiento..." required="true" />
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="Confirmar Rechazo" icon="pi pi-times"
+                        actionListener="#{aprobacionBean.rechazarConObservacion(aprobacionBean.requerimientoSeleccionado)}"
+                        update=":formBandeja:tablaPendientes :msgs" oncomplete="PF('dlgRechazar').hide()"
+                        styleClass="ui-button-danger" />
+                    <p:commandButton value="Cancelar" icon="pi pi-ban" onclick="PF('dlgRechazar').hide()" type="button"
+                        styleClass="ui-button-secondary" style="margin-left: 10px;" />
                 </f:facet>
             </h:form>
         </p:dialog>
