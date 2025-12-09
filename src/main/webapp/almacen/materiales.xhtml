@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestión de Materiales (Productos)</h1>
+
+        <h:form id="formMaterial">
+            <p:panel header="Registrar Material" style="margin-bottom: 20px;">
+                <p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
+                    
+                    <p:outputLabel value="Nombre Material:" for="nom"/>
+                    <p:inputText id="nom" value="#{materialBean.material.nombre}" required="true"
+                                 placeholder="Ej: ALAMBRE GALVANIZADO N°16"/>
+
+                    <p:outputLabel value="Cód. Correlativo:" for="cod"/>
+                    <p:inputText id="cod" value="#{materialBean.material.codCorrelativo}" 
+                                 placeholder="Ej: 001"/>
+
+                    <p:outputLabel value="Grupo:" for="grupo"/>
+                    <p:selectOneMenu id="grupo" value="#{materialBean.idGrupoSeleccionado}" required="true">
+                        <f:selectItem itemLabel="-- Seleccione Grupo --" itemValue=""/>
+                        <f:selectItems value="#{materialBean.listaGrupos}" var="g" 
+                                       itemLabel="#{g.descripcion}" itemValue="#{g.id}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Unidad de Medida:" for="unidad"/>
+                    <p:selectOneMenu id="unidad" value="#{materialBean.idUnidadSeleccionada}" required="true">
+                        <f:selectItem itemLabel="-- Seleccione Unidad --" itemValue=""/>
+                        <f:selectItems value="#{materialBean.listaUnidades}" var="u" 
+                                       itemLabel="#{u.abreviatura} - #{u.descripcion}" itemValue="#{u.id}"/>
+                    </p:selectOneMenu>
+
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Guardar Material" icon="pi pi-check" 
+                                     actionListener="#{materialBean.guardar}" 
+                                     update=":formTabla:tablaMateriales :formMaterial"
+                                     styleClass="ui-button-success"/>
+                </f:facet>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formTabla">
+            <p:dataTable id="tablaMateriales" value="#{materialBean.materiales}" var="m" 
+                         paginator="true" rows="5" stripedRows="true">
+                
+                <p:column headerText="Nombre Material" sortBy="#{m.nombre}" filterBy="#{m.nombre}">
+                    <h:outputText value="#{m.nombre}" style="font-weight: bold;"/>
+                </p:column>
+
+                <p:column headerText="Grupo">
+                    <h:outputText value="#{m.grupo.descripcion}" />
+                </p:column>
+
+                <p:column headerText="Unidad" width="100" style="text-align: center;">
+                    <p:tag value="#{m.unidad.abreviatura}" severity="info"/>
+                </p:column>
+                
+                <p:column headerText="Fecha" width="120">
+                    <h:outputText value="#{m.fechaCreacion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="date"/>
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Operación" width="120" style="text-align: center;">
+                     <p:commandButton icon="pi pi-trash" styleClass="rounded-button ui-button-danger ui-button-flat"
+                                      actionListener="#{materialBean.eliminar(m.id)}"
+                                      update="tablaMateriales">
+                        <p:confirm header="Confirmación" message="¿Borrar este material?" icon="pi pi-exclamation-triangle"/>
+                     </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

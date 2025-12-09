@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Generar Orden de Compra</h1>
+
+        <h:form id="formGenerar">
+            <p:panel header="Selección de Requerimiento Aprobado" style="margin-bottom: 20px;">
+                <p:panelGrid columns="3" layout="flex" contentStyleClass="p-align-baseline ui-fluid">
+                    <p:outputLabel value="Requerimiento:" for="req" />
+                    <p:selectOneMenu id="req" value="#{comprasBean.requerimientoSeleccionado}"
+                        converter="omnifaces.SelectItemsConverter" required="true">
+                        <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                        <f:selectItems value="#{comprasBean.listaRequerimientosAprobados}" var="r"
+                            itemLabel="Ref: #{r.id} - #{r.proyecto.nombre} (#{r.fechaSolicitud})" itemValue="#{r}" />
+                        <p:ajax listener="#{comprasBean.cargarDetallesDeRequerimiento}" update="panelOrden" />
+                    </p:selectOneMenu>
+
+                    <p:message for="req" />
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel id="panelOrden" header="Datos de la Orden"
+                visible="#{not empty comprasBean.requerimientoSeleccionado}">
+                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid"
+                    style="margin-bottom: 20px;">
+                    <p:outputLabel value="Proveedor:" for="prov" />
+                    <p:selectOneMenu id="prov" value="#{comprasBean.ordenCompra.proveedor}"
+                        converter="omnifaces.SelectItemsConverter" required="true">
+                        <f:selectItem itemLabel="-- Seleccionar Proveedor --" itemValue="" />
+                        <f:selectItems value="#{comprasBean.listaProveedores}" var="pv" itemLabel="#{pv.razonSocial}"
+                            itemValue="#{pv}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Fecha Emisión:" />
+                    <h:outputText value="#{comprasBean.ordenCompra.fechaEmision}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+
+                    <p:outputLabel value="Moneda:" for="mon" />
+                    <p:selectOneMenu id="mon" value="#{comprasBean.ordenCompra.moneda}">
+                        <f:selectItem itemLabel="Soles" itemValue="Soles" />
+                        <f:selectItem itemLabel="Dólares" itemValue="Dólares" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Usuario Compras:" />
+                    <h:outputText value="#{comprasBean.ordenCompra.usuarioCompras.username}"
+                        style="font-weight: bold;" />
+                </p:panelGrid>
+
+                <p:dataTable value="#{comprasBean.detalles}" var="d" style="margin-bottom: 20px;">
+                    <p:column headerText="Material">
+                        <h:outputText value="#{d.detalleRequerimiento.material.nombre}" />
+                    </p:column>
+                    <p:column headerText="Cantidad">
+                        <h:outputText value="#{d.cantidad}" />
+                    </p:column>
+                    <p:column headerText="Precio Unit." width="150">
+                        <p:inputNumber value="#{d.precioUnitario}" symbol="S/ " decimalPlaces="2" required="true" />
+                    </p:column>
+                </p:dataTable>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Generar Orden" icon="pi pi-check"
+                        actionListener="#{comprasBean.generarOrden}" update=":formGenerar"
+                        styleClass="ui-button-success" />
+                </f:facet>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

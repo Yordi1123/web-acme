@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Reporte de Órdenes de Compra</h1>
+
+        <h:form id="formReporte">
+            <div class="card">
+                <p:dataTable id="dtOrdenes" value="#{comprasBean.listaOrdenes}" var="o" paginator="true" rows="10"
+                    stripedRows="true" rowKey="#{o.id}" selectionMode="single">
+
+                    <f:facet name="header">
+                        <div class="flex justify-content-between align-items-center">
+                            <span>Listado Total</span>
+                            <p:commandButton id="toggler" type="button" value="Columnas" icon="pi pi-align-justify" />
+                            <p:columnToggler datasource="dtOrdenes" trigger="toggler" />
+                        </div>
+                    </f:facet>
+
+                    <p:column headerText="ID" width="50" sortBy="#{o.id}">
+                        <h:outputText value="#{o.id}" />
+                    </p:column>
+
+                    <p:column headerText="Fecha" sortBy="#{o.fechaEmision}">
+                        <h:outputText value="#{o.fechaEmision}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Proveedor" filterBy="#{o.proveedor.razonSocial}">
+                        <h:outputText value="#{o.proveedor.razonSocial}" />
+                    </p:column>
+
+                    <p:column headerText="Moneda">
+                        <h:outputText value="#{o.moneda}" />
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <span
+                            class="badge #{o.estado eq 'GENERADA' ? 'badge-primary' : (o.estado eq 'ANULADA' ? 'badge-danger' : 'badge-success')}">
+                            #{o.estado}
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Responsable">
+                        <h:outputText value="#{o.usuarioCompras.username}" />
+                    </p:column>
+
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

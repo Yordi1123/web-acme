@@ -1,0 +1,58 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestión de Grupos</h1>
+
+        <h:form id="formRegistro">
+            <p:panel header="Nuevo Grupo" style="margin-bottom: 20px;">
+                <p:panelGrid columns="4" layout="flex" 
+                             contentStyleClass="p-align-baseline ui-fluid">
+                    
+                    <p:outputLabel value="Código:" for="cod"/>
+                    <p:inputText id="cod" value="#{grupoBean.grupo.codGrupo}" required="true"/>
+
+                    <p:outputLabel value="Descripción:" for="desc"/>
+                    <p:inputText id="desc" value="#{grupoBean.grupo.descripcion}" required="true"/>
+
+                    <p:outputLabel value="Observación:" for="obs"/>
+                    <p:inputText id="obs" value="#{grupoBean.grupo.observacion}"/>
+
+                    <p:commandButton value="Guardar" icon="pi pi-save" 
+                                     actionListener="#{grupoBean.guardar}" 
+                                     update=":formTabla:tablaGrupos :formRegistro"/>
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formTabla">
+            <p:dataTable id="tablaGrupos" value="#{grupoBean.grupos}" var="g" stripedRows="true">
+                <p:column headerText="ID" width="50">
+                    <h:outputText value="#{g.id}" />
+                </p:column>
+                
+                <p:column headerText="Código">
+                    <h:outputText value="#{g.codGrupo}" />
+                </p:column>
+                
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{g.descripcion}" />
+                </p:column>
+                
+                <p:column headerText="Observación">
+                    <h:outputText value="#{g.observacion}" />
+                </p:column>
+                
+                <p:column headerText="Estado">
+                    <span class="badge #{g.estado eq 'Activo' ? 'badge-success' : 'badge-danger'}">
+                        #{g.estado}
+                    </span>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

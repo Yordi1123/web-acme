@@ -1,27 +1,53 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="jakarta.faces.core">
-    <h:head>
-        <title>Prueba de Conexión</title>
-    </h:head>
-    <h:body>
-        <h1>Lista de Unidades (Prueba de BD)</h1>
-        
-        <p:dataTable value="#{unidadBean.unidades}" var="u">
-            <p:column headerText="ID">
-                <h:outputText value="#{u.id}" />
-            </p:column>
-            
-            <p:column headerText="Descripción">
-                <h:outputText value="#{u.descripcion}" />
-            </p:column>
-            
-            <p:column headerText="Estado">
-                <h:outputText value="#{u.estado}" />
-            </p:column>
-        </p:dataTable>
-    </h:body>
-</html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Dashboard</h1>
+
+        <div class="card">
+            <p:panel header="Bienvenido al Sistema de Gestión ACME" style="margin-bottom: 20px;">
+                <p>
+                    Seleccione una opción del menú lateral para comenzar.
+                </p>
+            </p:panel>
+
+            <div class="p-grid ui-fluid">
+                <div class="p-col-12 p-md-4">
+                    <p:card style="margin-bottom: 2em">
+                        <f:facet name="title">
+                            Almacén
+                        </f:facet>
+                        <p>Gestión de materiales, unidades y grupos.</p>
+                        <f:facet name="footer">
+                            <p:button icon="pi pi-check" value="Ir a Materiales" outcome="/almacen/materiales.xhtml" />
+                        </f:facet>
+                    </p:card>
+                </div>
+
+                <div class="p-col-12 p-md-4">
+                    <p:card style="margin-bottom: 2em">
+                        <f:facet name="title">
+                            Compras
+                        </f:facet>
+                        <p>Gestión de requerimientos y órdenes de compra.</p>
+                        <f:facet name="footer">
+                            <p:button icon="pi pi-check" value="Mis Pedidos" outcome="/compras/mis_pedidos.xhtml" />
+                        </f:facet>
+                    </p:card>
+                </div>
+
+                <div class="p-col-12 p-md-4">
+                    <p:card style="margin-bottom: 2em">
+                        <f:facet name="title">
+                            Maestros
+                        </f:facet>
+                        <p>Administración de proyectos, usuarios y proveedores.</p>
+                        <f:facet name="footer">
+                            <p:button icon="pi pi-check" value="Ver Proyectos" outcome="/maestros/proyectos.xhtml" />
+                        </f:facet>
+                    </p:card>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

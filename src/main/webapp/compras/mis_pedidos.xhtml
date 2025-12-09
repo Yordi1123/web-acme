@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Mis Pedidos / Requerimientos</h1>
+
+        <h:form id="formRegistro">
+            <p:panel header="Nuevo Requerimiento" style="margin-bottom: 20px;">
+
+                <!-- Cabecera -->
+                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid"
+                    style="margin-bottom: 20px;">
+                    <p:outputLabel value="Fecha:" />
+                    <h:outputText value="#{requerimientoBean.requerimiento.fechaSolicitud}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+
+                    <p:outputLabel value="Usuario:" />
+                    <h:outputText value="#{requerimientoBean.requerimiento.usuarioSolicitante.username}"
+                        style="font-weight: bold;" />
+
+                    <p:outputLabel value="Proyecto:" for="proy" />
+                    <p:selectOneMenu id="proy" value="#{requerimientoBean.requerimiento.proyecto}"
+                        converter="omnifaces.SelectItemsConverter" required="true">
+                        <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                        <f:selectItems value="#{requerimientoBean.listaProyectos}" var="p" itemLabel="#{p.nombre}"
+                            itemValue="#{p}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Centro de Costo:" for="cc" />
+                    <p:selectOneMenu id="cc" value="#{requerimientoBean.requerimiento.centroCosto}"
+                        converter="omnifaces.SelectItemsConverter" required="true">
+                        <f:selectItem itemLabel="-- Seleccionar --" itemValue="" />
+                        <f:selectItems value="#{requerimientoBean.listaCentrosCosto}" var="c" itemLabel="#{c.nombre}"
+                            itemValue="#{c}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Observación:" for="obs" />
+                    <p:inputTextarea id="obs" value="#{requerimientoBean.requerimiento.observacion}" rows="1"
+                        autoResize="false" />
+                </p:panelGrid>
+
+                <p:divider />
+
+                <!-- Detalle (Agregar Items) -->
+                <h5>Agregar Materiales</h5>
+                <p:panelGrid columns="3" layout="flex" contentStyleClass="p-align-end ui-fluid">
+                    <p:outputLabel value="Material:" for="mat" />
+                    <p:selectOneMenu id="mat" value="#{requerimientoBean.idMaterialSeleccionado}" filter="true"
+                        filterMatchMode="contains">
+                        <f:selectItem itemLabel="-- Buscar Material --" itemValue="" />
+                        <f:selectItems value="#{requerimientoBean.listaMateriales}" var="m"
+                            itemLabel="#{m.nombre} - #{m.codCorrelativo}" itemValue="#{m.id}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel value="Cantidad:" for="cant" />
+                    <p:inputNumber id="cant" value="#{requerimientoBean.detalle.cantidadSolicitada}"
+                        decimalPlaces="2" />
+
+                    <p:commandButton value="Agregar Item" icon="pi pi-plus"
+                        actionListener="#{requerimientoBean.agregarDetalle}" update="tablaDetalles mat cant"
+                        process="@this mat cant" styleClass="ui-button-secondary" />
+                </p:panelGrid>
+
+                <p:dataTable id="tablaDetalles" value="#{requerimientoBean.detalles}" var="d"
+                    emptyMessage="No hay materiales agregados" style="margin-top: 10px;">
+                    <p:column headerText="Material">
+                        <h:outputText value="#{d.material.nombre}" />
+                    </p:column>
+                    <p:column headerText="Unidad">
+                        <h:outputText value="#{d.material.unidad.abreviatura}" />
+                    </p:column>
+                    <p:column headerText="Cantidad">
+                        <h:outputText value="#{d.cantidadSolicitada}" />
+                    </p:column>
+                    <p:column width="50">
+                        <p:commandButton icon="pi pi-trash" actionListener="#{requerimientoBean.eliminarDetalle(d)}"
+                            update="tablaDetalles" process="@this"
+                            styleClass="ui-button-danger ui-button-flat rounded-button" />
+                    </p:column>
+                </p:dataTable>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Enviar Requerimiento" icon="pi pi-send"
+                        actionListener="#{requerimientoBean.guardar}" update=":formHistory:tablaReq :formRegistro"
+                        styleClass="ui-button-primary" style="width: 100%; margin-top: 10px;" />
+                </f:facet>
+            </p:panel>
+        </h:form>
+
+        <!-- Historial -->
+        <h:form id="formHistory">
+            <h3>Mis Requerimientos Recientes</h3>
+            <p:dataTable id="tablaReq" value="#{requerimientoBean.requerimientos}" var="r" paginator="true" rows="5"
+                stripedRows="true" sortMode="single">
+
+                <p:column headerText="ID" width="50">
+                    <h:outputText value="#{r.id}" />
+                </p:column>
+
+                <p:column headerText="Fecha" sortBy="#{r.fechaSolicitud}">
+                    <h:outputText value="#{r.fechaSolicitud}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Proyecto">
+                    <h:outputText value="#{r.proyecto.nombre}" />
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <span
+                        class="badge #{r.estado eq 'APROBADO' ? 'badge-success' : (r.estado eq 'RECHAZADO' ? 'badge-danger' : 'badge-warning')}">
+                        #{r.estado}
+                    </span>
+                </p:column>
+
+                <p:column headerText="Solicitante">
+                    <h:outputText value="#{r.usuarioSolicitante.username}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

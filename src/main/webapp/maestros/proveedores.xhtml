@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Maestro de Proveedores</h1>
+
+        <h:form id="formRegistro">
+            <p:panel header="Datos del Proveedor" style="margin-bottom: 20px;">
+                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid">
+
+                    <p:outputLabel value="RUC:" for="ruc" />
+                    <p:inputText id="ruc" value="#{proveedorBean.proveedor.ruc}" required="true" maxlength="11" />
+
+                    <p:outputLabel value="Razón Social:" for="razon" />
+                    <p:inputText id="razon" value="#{proveedorBean.proveedor.razonSocial}" required="true" />
+
+                    <p:outputLabel value="Dirección:" for="dir" />
+                    <p:inputText id="dir" value="#{proveedorBean.proveedor.direccion}" />
+
+                    <p:outputLabel value="Teléfono:" for="tel" />
+                    <p:inputText id="tel" value="#{proveedorBean.proveedor.telefono}" />
+
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{proveedorBean.guardar}"
+                        update=":formTabla:tablaProveedores :formRegistro" styleClass="ui-button-success" />
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formTabla">
+            <p:dataTable id="tablaProveedores" value="#{proveedorBean.proveedores}" var="pv" stripedRows="true"
+                paginator="true" rows="10">
+
+                <p:column headerText="RUC">
+                    <h:outputText value="#{pv.ruc}" />
+                </p:column>
+
+                <p:column headerText="Razón Social">
+                    <h:outputText value="#{pv.razonSocial}" />
+                </p:column>
+
+                <p:column headerText="Dirección">
+                    <h:outputText value="#{pv.direccion}" />
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <span class="badge #{pv.estado eq 'Activo' ? 'badge-success' : 'badge-danger'}">
+                        #{pv.estado}
+                    </span>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

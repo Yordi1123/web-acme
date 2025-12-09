@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ACME Constructor CLI</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .header {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .footer {
+            padding: 10px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* PrimeFaces overwrites */
+        .ui-menu {
+            width: 100% !important;
+            border: none !important;
+        }
+
+        .p-text-bold {
+            font-weight: bold;
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <div class="header">
+        <h3 style="margin:0;">Sistema de Gestión ACME</h3>
+        <h:form>
+            <p:outputLabel value="Bienvenido, #{loginBean.usuarioLogueado.username}" style="margin-right: 10px;"
+                rendered="#{loginBean.loggedIn}" />
+            <p:commandButton value="Salir" action="#{loginBean.logout}" icon="pi pi-sign-out"
+                styleClass="ui-button-flat ui-button-plain" rendered="#{loginBean.loggedIn}" />
+        </h:form>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <h:form>
+                <p:menu toggleable="true">
+                    <p:submenu label="General">
+                        <p:menuitem value="Dashboard" outcome="/index.xhtml" icon="pi pi-home" />
+                    </p:submenu>
+
+                    <p:submenu label="Almacén">
+                        <p:menuitem value="Grupos" outcome="/almacen/grupos.xhtml" icon="pi pi-tags" />
+                        <p:menuitem value="Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-box" />
+                        <p:menuitem value="Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-briefcase" />
+                    </p:submenu>
+
+                    <p:submenu label="Maestros">
+                        <p:menuitem value="Proyectos" outcome="/maestros/proyectos.xhtml" icon="pi pi-building" />
+                        <p:menuitem value="Proveedores" outcome="/maestros/proveedores.xhtml" icon="pi pi-truck" />
+                        <p:menuitem value="Usuarios" outcome="/maestros/usuarios.xhtml" icon="pi pi-users" />
+                    </p:submenu>
+
+                    <p:submenu label="Compras">
+                        <p:menuitem value="Mis Pedidos" outcome="/compras/mis_pedidos.xhtml"
+                            icon="pi pi-shopping-cart" />
+                        <p:menuitem value="Aprobación" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle" />
+                        <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file" />
+                        <p:menuitem value="Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-bar" />
+                    </p:submenu>
+                </p:menu>
+            </h:form>
+        </div>
+
+        <div class="content">
+            <p:growl id="msgs" showDetail="true" showSummary="false">
+                <p:autoUpdate />
+            </p:growl>
+
+            <ui:insert name="content">
+                Contenido por defecto
+            </ui:insert>
+        </div>
+    </div>
+
+</h:body>
+
+</html>

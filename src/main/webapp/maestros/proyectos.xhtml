@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Maestro de Proyectos</h1>
+
+        <h:form id="formRegistro">
+            <p:panel header="Datos del Proyecto" style="margin-bottom: 20px;">
+                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid">
+
+                    <p:outputLabel value="Código:" for="cod" />
+                    <p:inputText id="cod" value="#{proyectoBean.proyecto.codigo}" required="true" />
+
+                    <p:outputLabel value="Nombre:" for="nom" />
+                    <p:inputText id="nom" value="#{proyectoBean.proyecto.nombre}" required="true" />
+
+                    <p:outputLabel value="Ubicación:" for="ubi" />
+                    <p:inputText id="ubi" value="#{proyectoBean.proyecto.ubicacion}" />
+
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{proyectoBean.guardar}"
+                        update=":formTabla:tablaProyectos :formRegistro" styleClass="ui-button-success" />
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formTabla">
+            <p:dataTable id="tablaProyectos" value="#{proyectoBean.proyectos}" var="p" stripedRows="true"
+                paginator="true" rows="10">
+
+                <p:column headerText="Código">
+                    <h:outputText value="#{p.codigo}" />
+                </p:column>
+
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{p.nombre}" />
+                </p:column>
+
+                <p:column headerText="Ubicación">
+                    <h:outputText value="#{p.ubicacion}" />
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <span class="badge #{p.estado eq 'Activo' ? 'badge-success' : 'badge-secondary'}">
+                        #{p.estado}
+                    </span>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

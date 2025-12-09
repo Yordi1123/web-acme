@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:ui="jakarta.faces.facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestión de Unidades</h1>
+
+        <h:form id="formRegistro">
+            <p:panel header="Nueva Unidad" style="margin-bottom: 20px;">
+                <p:panelGrid columns="4" layout="flex" 
+                             contentStyleClass="p-align-baseline ui-fluid">
+                    
+                    <p:outputLabel value="Abreviatura:" for="abrev"/>
+                    <p:inputText id="abrev" value="#{unidadBean.unidad.abreviatura}" 
+                                 required="true" placeholder="Ej: KG"/>
+
+                    <p:outputLabel value="Descripción:" for="desc"/>
+                    <p:inputText id="desc" value="#{unidadBean.unidad.descripcion}" 
+                                 required="true" placeholder="Ej: KILOGRAMO"/>
+
+                    <p:commandButton value="Guardar" icon="pi pi-save" 
+                                     actionListener="#{unidadBean.guardar}" 
+                                     update=":formTabla:tablaUnidades :formRegistro"
+                                     styleClass="ui-button-primary"/>
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formTabla">
+            <p:dataTable id="tablaUnidades" value="#{unidadBean.unidades}" var="u" 
+                         stripedRows="true" paginator="true" rows="10">
+                
+                <p:column headerText="ID" width="50">
+                    <h:outputText value="#{u.id}" />
+                </p:column>
+                
+                <p:column headerText="Abreviatura" width="150">
+                    <p:tag value="#{u.abreviatura}" severity="warning"/>
+                </p:column>
+                
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{u.descripcion}" />
+                </p:column>
+                
+                <p:column headerText="Estado">
+                    <span class="badge #{u.estado eq 'Activo' ? 'badge-success' : 'badge-danger'}">
+                        #{u.estado}
+                    </span>
+                </p:column>
+                
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Gestión de Usuarios</h1>
+
+        <h:form id="formRegistro">
+            <p:panel header="Datos de Usuario" style="margin-bottom: 20px;">
+                <p:panelGrid columns="4" layout="flex" contentStyleClass="p-align-baseline ui-fluid">
+
+                    <p:outputLabel value="Usuario:" for="user" />
+                    <p:inputText id="user" value="#{usuarioBean.usuario.username}" required="true" />
+
+                    <p:outputLabel value="Contraseña:" for="pass" />
+                    <p:password id="pass" value="#{usuarioBean.usuario.password}" required="true" redisplay="true" />
+
+                    <p:outputLabel value="Nombre Completo:" for="nombre" />
+                    <p:inputText id="nombre" value="#{usuarioBean.usuario.nombreCompleto}" />
+
+                    <p:outputLabel value="Cargo/Rol:" for="rol" />
+                    <p:selectOneMenu id="rol" value="#{usuarioBean.usuario.cargo}" required="true">
+                        <f:selectItems value="#{usuarioBean.roles}" var="r" itemLabel="#{r.label}" itemValue="#{r}" />
+                    </p:selectOneMenu>
+
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{usuarioBean.guardar}"
+                        update=":formTabla:tablaUsuarios :formRegistro" styleClass="ui-button-success" />
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formTabla">
+            <p:dataTable id="tablaUsuarios" value="#{usuarioBean.usuarios}" var="u" stripedRows="true" paginator="true"
+                rows="10">
+
+                <p:column headerText="Username">
+                    <h:outputText value="#{u.username}" />
+                </p:column>
+
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{u.nombreCompleto}" />
+                </p:column>
+
+                <p:column headerText="Cargo">
+                    <p:tag value="#{u.cargo.label}" severity="info" />
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <span class="badge #{u.estado eq 'Activo' ? 'badge-success' : 'badge-danger'}">
+                        #{u.estado}
+                    </span>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

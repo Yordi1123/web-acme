@@ -12,22 +12,35 @@ import java.util.List;
 @ViewScoped
 public class UnidadBean implements Serializable {
 
-    private List<Unidad> unidades;
-    private UnidadDAO unidadDAO = new UnidadDAO();
+    private Unidad unidad; // Objeto para el formulario
+    private List<Unidad> unidades; // Lista para la tabla
+    private UnidadDAO unidadDAO;
 
     @PostConstruct
     public void init() {
-        System.out.println("--- INICIANDO BEAN DE UNIDAD ---");
-    try {
+        unidadDAO = new UnidadDAO();
+        unidad = new Unidad();
+        // Cargar la lista al iniciar
         unidades = unidadDAO.findAll();
-        System.out.println("✅ Se encontraron " + (unidades != null ? unidades.size() : 0) + " unidades.");
-    } catch (Exception e) {
-        System.out.println("❌ ERROR GRAVE CONECTANDO A BD:");
-        e.printStackTrace(); // Esto imprimirá el error real en la ventana Output
-    }
     }
 
-    public List<Unidad> getUnidades() {
-        return unidades;
+    public void guardar() {
+        try {
+            unidad.setEstado("Activo"); // Por defecto
+            unidadDAO.create(unidad);
+            
+            // Actualizar la tabla y limpiar el formulario
+            unidades = unidadDAO.findAll();
+            unidad = new Unidad();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    // --- Getters y Setters ---
+    public Unidad getUnidad() { return unidad; }
+    public void setUnidad(Unidad unidad) { this.unidad = unidad; }
+
+    public List<Unidad> getUnidades() { return unidades; }
+    public void setUnidades(List<Unidad> unidades) { this.unidades = unidades; }
 }

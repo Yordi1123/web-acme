@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1>Bandeja de Aprobación</h1>
+
+        <h:form id="formBandeja">
+            <p:dataTable id="tablaPendientes" value="#{requerimientoBean.requerimientos}" var="r"
+                filteredValue="#{requerimientoBean.requerimientos}" globalFilterOnly="true" paginator="true" rows="10"
+                stripedRows="true">
+
+                <f:facet name="header">
+                    <div class="flex justify-content-end">
+                        <span class="filter-container ui-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <p:inputText id="globalFilter" onkeyup="PF('dtReqs').filter()" placeholder="Buscar..." />
+                        </span>
+                    </div>
+                </f:facet>
+
+                <p:column headerText="ID" width="50" sortBy="#{r.id}">
+                    <h:outputText value="#{r.id}" />
+                </p:column>
+
+                <p:column headerText="Fecha">
+                    <h:outputText value="#{r.fechaSolicitud}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Solicitante" filterBy="#{r.usuarioSolicitante.username}">
+                    <h:outputText value="#{r.usuarioSolicitante.username}" />
+                </p:column>
+
+                <p:column headerText="Proyecto">
+                    <h:outputText value="#{r.proyecto.nombre}" />
+                </p:column>
+
+                <p:column headerText="CC">
+                    <h:outputText value="#{r.centroCosto.nombre}" />
+                </p:column>
+
+                <p:column headerText="Estado" filterBy="#{r.estado}">
+                    <span
+                        class="badge #{r.estado eq 'APROBADO' ? 'badge-success' : (r.estado eq 'RECHAZADO' ? 'badge-danger' : 'badge-warning')}">
+                        #{r.estado}
+                    </span>
+                </p:column>
+
+                <p:column headerText="Acciones" style="text-align: center;">
+                    <p:commandButton icon="pi pi-check" styleClass="rounded-button ui-button-success"
+                        actionListener="#{requerimientoBean.aprobar(r)}" update="tablaPendientes"
+                        disabled="#{r.estado ne 'PENDIENTE'}" title="Aprobar" />
+
+                    <p:commandButton icon="pi pi-times" styleClass="rounded-button ui-button-danger ml-2"
+                        actionListener="#{requerimientoBean.rechazar(r)}" update="tablaPendientes"
+                        disabled="#{r.estado ne 'PENDIENTE'}" title="Rechazar" style="margin-left: 5px;" />
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
