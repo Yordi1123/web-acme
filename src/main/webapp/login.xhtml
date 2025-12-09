@@ -5,45 +5,96 @@
 <h:head>
     <title>Login - ACME</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f4f6f9;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 380px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+        }
+
+        .login-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </h:head>
 <h:body>
-    <h:form>
-        <p:growl id="growl" showDetail="true" />
+    <div class="login-container">
+        <div class="login-icon">
+            <i class="pi pi-lock"></i>
+        </div>
+        <h2>Iniciar Sesión</h2>
 
-        <p:card style="width: 350px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <div style="margin-bottom: 20px;">
-                <i class="pi pi-user" style="font-size: 3rem; color: #2196F3;"></i>
-                <h2>Iniciar Sesión</h2>
-            </div>
+        <h:form>
+            <p:growl id="growl" showDetail="true" />
 
             <div class="ui-fluid">
-                <div class="p-field" style="margin-bottom: 15px; text-align: left;">
-                    <p:outputLabel for="username" value="Usuario" />
+                <div class="p-field" style="margin-bottom: 20px; text-align: left;">
+                    <p:outputLabel for="username" value="Usuario" style="font-weight: 600;" />
                     <p:inputText id="username" value="#{loginBean.username}" required="true"
-                        placeholder="Ingrese su usuario" />
+                        placeholder="Ingrese su usuario" style="margin-top: 5px;" />
                 </div>
 
-                <div class="p-field" style="margin-bottom: 25px; text-align: left;">
-                    <p:outputLabel for="password" value="Contraseña" />
+                <div class="p-field" style="margin-bottom: 30px; text-align: left;">
+                    <p:outputLabel for="password" value="Contraseña" style="font-weight: 600;" />
                     <p:password id="password" value="#{loginBean.password}" required="true" toggleMask="true"
-                        placeholder="Ingrese su contraseña" />
+                        placeholder="Ingrese su contraseña" style="margin-top: 5px;" />
                 </div>
 
                 <p:commandButton value="Ingresar" action="#{loginBean.iniciarSesion}" update="growl"
-                    icon="pi pi-sign-in" styleClass="ui-button-primary" style="width: 100%;" />
+                    icon="pi pi-sign-in" styleClass="ui-button-primary ui-button-raised"
+                    style="width: 100%; padding: 12px; font-size: 1rem;" />
             </div>
-        </p:card>
-    </h:form>
+
+            <h:link outcome="/index.xhtml" styleClass="back-link">
+                <i class="pi pi-arrow-left" style="margin-right: 5px;"></i> Volver al inicio
+            </h:link>
+        </h:form>
+    </div>
 </h:body>
 
 </html>

@@ -1,14 +1,112 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core">
+<h:head>
+    <title>ACME Constructor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    <ui:define name="content">
-        <div style="text-align: center; margin-top: 50px;">
-            <h1 style="font-size: 3rem; color: #333;">Bienvenido al Sistema ACME</h1>
-            <p style="font-size: 1.5rem; color: #666;">Plataforma integral de gestión de obras y compras.</p>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-            <p:button value="Ingresar al Sistema" outcome="/login.xhtml" icon="pi pi-sign-in"
-                styleClass="ui-button-raised ui-button-lg" style="margin-top: 20px;" />
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .features {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="hero">
+        <h1><i class="pi pi-building" style="margin-right: 15px;"></i>Sistema ACME</h1>
+        <p>Plataforma integral para la gestión de obras, requerimientos y compras de tu empresa constructora.</p>
+
+        <div class="features">
+            <div class="feature-card">
+                <i class="pi pi-shopping-cart"></i>
+                <h3>Requerimientos</h3>
+            </div>
+            <div class="feature-card">
+                <i class="pi pi-check-circle"></i>
+                <h3>Aprobaciones</h3>
+            </div>
+            <div class="feature-card">
+                <i class="pi pi-file"></i>
+                <h3>Órdenes de Compra</h3>
+            </div>
         </div>
-    </ui:define>
 
-</ui:composition>
+        <h:form>
+            <p:button value="Ingresar al Sistema" outcome="/login.xhtml" icon="pi pi-sign-in"
+                styleClass="ui-button-raised ui-button-rounded" style="font-size: 1.2rem; padding: 15px 40px;" />
+        </h:form>
+    </div>
+
+    <div class="footer">
+        © 2024 ACME Constructor. Todos los derechos reservados.
+    </div>
+</h:body>
+
+</html>

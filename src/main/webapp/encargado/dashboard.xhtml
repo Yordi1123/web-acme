@@ -1,14 +1,62 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <!-- Verificación de Sesión -->
-        <f:metadata xmlns:f="jakarta.faces.core">
+        <f:metadata>
             <f:viewAction action="#{loginBean.verificarSesion}" />
         </f:metadata>
 
-        <h1>Panel de Encargado de Obra</h1>
-        <p>Bienvenido al área de operaciones.</p>
+        <div class="p-grid">
+            <div class="p-col-12">
+                <h1 style="margin-bottom: 10px;">
+                    <i class="pi pi-user" style="margin-right: 10px;"></i>
+                    Panel de Encargado de Obra
+                </h1>
+                <p style="color: #666; margin-bottom: 30px;">
+                    Bienvenido, <strong>#{loginBean.usuarioLogueado.nombreCompleto}</strong>.
+                    Desde aquí puedes gestionar tus requerimientos de materiales.
+                </p>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-shopping-cart" style="margin-right: 8px;"></i> Mis Pedidos
+                    </f:facet>
+                    <p>Crea y gestiona tus requerimientos de materiales para la obra.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ir a Pedidos" outcome="/compras/mis_pedidos.xhtml" icon="pi pi-arrow-right"
+                            styleClass="ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-clock" style="margin-right: 8px;"></i> Estado
+                    </f:facet>
+                    <p>Revisa el estado de tus requerimientos enviados.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Estado" outcome="/compras/mis_pedidos.xhtml" icon="pi pi-eye"
+                            styleClass="ui-button-secondary ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-info-circle" style="margin-right: 8px;"></i> Ayuda
+                    </f:facet>
+                    <p>Contacta al área de logística si tienes dudas.</p>
+                    <f:facet name="footer">
+                        <p:button value="Soporte" disabled="true" icon="pi pi-phone"
+                            styleClass="ui-button-help ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+        </div>
     </ui:define>
 
 </ui:composition>

@@ -2,115 +2,288 @@
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html"
-    xmlns:p="http://primefaces.org/ui">
+    xmlns:p="http://primefaces.org/ui" xmlns:c="jakarta.tags.core">
 
 <h:head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>ACME Constructor CLI</title>
+    <title>ACME Constructor</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f8f9fa;
         }
 
+        /* === HEADER DINÁMICO POR ROL === */
         .header {
-            background-color: #2196F3;
             color: white;
-            padding: 15px;
+            padding: 0 20px;
+            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .header-encargado {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .header-jefe {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .header-logistica {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .header-default {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left i {
+            font-size: 1.5rem;
+        }
+
+        .header h3 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 25px;
+        }
+
+        .user-info i {
+            font-size: 1.2rem;
+        }
+
+        /* === LAYOUT === */
         .main-container {
             display: flex;
-            height: calc(100vh - 60px);
+            min-height: calc(100vh - 60px);
         }
 
+        /* === SIDEBAR MODERNO === */
         .sidebar {
-            width: 250px;
-            background-color: #fff;
-            border-right: 1px solid #ddd;
-            padding: 10px;
+            width: 260px;
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 20px 0;
             overflow-y: auto;
         }
 
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header h4 {
+            color: white;
+            margin: 0 0 5px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-header p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-section-title {
+            padding: 10px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #334155;
+            color: white;
+            border-left-color: #3b82f6;
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* === CONTENT AREA === */
         .content {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
+            background: #f8f9fa;
         }
 
-        .footer {
-            padding: 10px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-        }
-
-        /* PrimeFaces overwrites */
+        /* === PRIMEFACES OVERRIDES === */
         .ui-menu {
             width: 100% !important;
             border: none !important;
+            background: transparent !important;
         }
 
-        .p-text-bold {
-            font-weight: bold;
+        .ui-menu .ui-menuitem-link {
+            color: #94a3b8 !important;
+        }
+
+        .ui-menu .ui-menuitem-link:hover {
+            background: #334155 !important;
+            color: white !important;
+        }
+
+        .ui-submenu-header {
+            color: #64748b !important;
+            background: transparent !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            padding: 15px 20px 10px !important;
+            border: none !important;
+        }
+
+        .ui-menuitem {
+            border: none !important;
+        }
+
+        .ui-menuitem-icon {
+            color: #94a3b8 !important;
+        }
+
+        .ui-menu .ui-menuitem-link:hover .ui-menuitem-icon {
+            color: white !important;
+        }
+
+        /* Cards */
+        .p-card {
+            border-radius: 12px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
         }
     </style>
 </h:head>
 
 <h:body>
+    <!-- Dynamic Header based on Role -->
+    <c:set var="headerClass" value="header header-default" />
+    <c:set var="roleIcon" value="pi pi-user" />
+    <c:set var="roleLabel" value="Usuario" />
 
-    <div class="header">
-        <h3 style="margin:0;">Sistema de Gestión ACME</h3>
-        <h:form>
-            <p:outputLabel value="Bienvenido, #{loginBean.usuarioLogueado.username}" style="margin-right: 10px;"
-                rendered="#{loginBean.loggedIn}" />
-            <p:commandButton value="Salir" action="#{loginBean.cerrarSesion}" icon="pi pi-sign-out"
-                styleClass="ui-button-flat ui-button-plain" rendered="#{loginBean.loggedIn}" />
-        </h:form>
+    <c:if test="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA'}">
+        <c:set var="headerClass" value="header header-encargado" />
+        <c:set var="roleIcon" value="pi pi-wrench" />
+        <c:set var="roleLabel" value="Encargado de Obra" />
+    </c:if>
+    <c:if test="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
+        <c:set var="headerClass" value="header header-jefe" />
+        <c:set var="roleIcon" value="pi pi-briefcase" />
+        <c:set var="roleLabel" value="Jefe de Área" />
+    </c:if>
+    <c:if test="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA'}">
+        <c:set var="headerClass" value="header header-logistica" />
+        <c:set var="roleIcon" value="pi pi-truck" />
+        <c:set var="roleLabel" value="Logística" />
+    </c:if>
+
+    <div class="#{headerClass}">
+        <div class="header-left">
+            <i class="pi pi-building"></i>
+            <h3>ACME Constructor</h3>
+        </div>
+        <div class="header-right">
+            <h:panelGroup rendered="#{loginBean.loggedIn}">
+                <div class="user-info">
+                    <i class="#{roleIcon}"></i>
+                    <span>#{loginBean.usuarioLogueado.nombreCompleto}</span>
+                </div>
+            </h:panelGroup>
+            <h:form rendered="#{loginBean.loggedIn}">
+                <p:commandButton value="Salir" action="#{loginBean.cerrarSesion}" icon="pi pi-sign-out"
+                    styleClass="ui-button-outlined" style="color: white; border-color: rgba(255,255,255,0.5);" />
+            </h:form>
+        </div>
     </div>
 
     <div class="main-container">
         <div class="sidebar">
+            <div class="sidebar-header">
+                <h4>Menú Principal</h4>
+                <p>#{roleLabel}</p>
+            </div>
+
             <h:form>
-                <p:menu toggleable="true">
-                    <p:submenu label="General">
-                        <p:menuitem value="Inicio" outcome="/index.xhtml" icon="pi pi-home" />
+                <p:menu>
+                    <!-- General - Visible para todos -->
+                    <p:submenu label="Inicio">
+                        <p:menuitem value="Mi Dashboard" icon="pi pi-home"
+                            outcome="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' ? '/encargado/dashboard.xhtml' : 
+                                      (loginBean.usuarioLogueado.cargo eq 'JEFE_AREA' ? '/jefe/dashboard.xhtml' : '/logistica/dashboard.xhtml')}" />
                     </p:submenu>
 
-                    <!-- Solo Logística puede ver Almacén (Suposición lógica) -->
+                    <!-- Almacén - Solo Logística -->
                     <p:submenu label="Almacén" rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA'}">
+                        <p:menuitem value="Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-box" />
                         <p:menuitem value="Grupos" outcome="/almacen/grupos.xhtml" icon="pi pi-tags" />
-                        <p:menuitem value="Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-box" />
-                        <p:menuitem value="Materiales" outcome="/almacen/materiales.xhtml" icon="pi pi-briefcase" />
+                        <p:menuitem value="Unidades" outcome="/almacen/unidades.xhtml" icon="pi pi-th-large" />
                     </p:submenu>
 
-                    <!-- Solo Jefe puede ver Maestros -->
-                    <p:submenu label="Maestros" rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
+                    <!-- Maestros - Solo Jefe -->
+                    <p:submenu label="Configuración" rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
                         <p:menuitem value="Proyectos" outcome="/maestros/proyectos.xhtml" icon="pi pi-building" />
                         <p:menuitem value="Proveedores" outcome="/maestros/proveedores.xhtml" icon="pi pi-truck" />
                         <p:menuitem value="Usuarios" outcome="/maestros/usuarios.xhtml" icon="pi pi-users" />
                     </p:submenu>
 
-                    <!-- Compras: Visibilidad mixta -->
-                    <p:submenu label="Compras" rendered="#{loginBean.loggedIn}">
-                        <!-- Encargado crea pedidos -->
+                    <!-- Operaciones - Por Rol -->
+                    <p:submenu label="Operaciones">
                         <p:menuitem value="Mis Pedidos" outcome="/compras/mis_pedidos.xhtml" icon="pi pi-shopping-cart"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA'}" />
-
-                        <!-- Jefe aprueba -->
-                        <p:menuitem value="Aprobación" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle"
+                        <p:menuitem value="Aprobaciones" outcome="/compras/aprobacion.xhtml" icon="pi pi-check-circle"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}" />
-
-                        <!-- Logística genera ordenes -->
-                        <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file"
+                        <p:menuitem value="Generar Orden" outcome="/compras/generar_orden.xhtml" icon="pi pi-file-edit"
                             rendered="#{loginBean.usuarioLogueado.cargo eq 'LOGISTICA'}" />
-
-                        <!-- Todos o Logística/Jefe ven reportes? Digamos Jefe y Logistica -->
                         <p:menuitem value="Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-chart-bar"
                             rendered="#{loginBean.usuarioLogueado.cargo ne 'ENCARGADO_OBRA'}" />
                     </p:submenu>

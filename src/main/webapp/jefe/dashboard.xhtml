@@ -1,13 +1,62 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
-    xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <f:metadata xmlns:f="jakarta.faces.core">
+        <f:metadata>
             <f:viewAction action="#{loginBean.verificarSesion}" />
         </f:metadata>
 
-        <h1>Panel de Jefe de Área</h1>
-        <p>Bienvenido al área de gestión y aprobaciones.</p>
+        <div class="p-grid">
+            <div class="p-col-12">
+                <h1 style="margin-bottom: 10px;">
+                    <i class="pi pi-briefcase" style="margin-right: 10px;"></i>
+                    Panel de Jefe de Área
+                </h1>
+                <p style="color: #666; margin-bottom: 30px;">
+                    Bienvenido, <strong>#{loginBean.usuarioLogueado.nombreCompleto}</strong>.
+                    Gestiona las aprobaciones y configuraciones del sistema.
+                </p>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-check-circle" style="margin-right: 8px;"></i> Aprobaciones
+                    </f:facet>
+                    <p>Revisa y aprueba los requerimientos pendientes de tu equipo.</p>
+                    <f:facet name="footer">
+                        <p:button value="Aprobar" outcome="/compras/aprobacion.xhtml" icon="pi pi-arrow-right"
+                            styleClass="ui-button-success" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-building" style="margin-right: 8px;"></i> Proyectos
+                    </f:facet>
+                    <p>Administra los proyectos activos de la empresa.</p>
+                    <f:facet name="footer">
+                        <p:button value="Gestionar" outcome="/maestros/proyectos.xhtml" icon="pi pi-cog"
+                            styleClass="ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-chart-bar" style="margin-right: 8px;"></i> Reportes
+                    </f:facet>
+                    <p>Consulta el historial de órdenes de compra generadas.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Reportes" outcome="/compras/reporte_ordenes.xhtml" icon="pi pi-eye"
+                            styleClass="ui-button-info ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+        </div>
     </ui:define>
 
 </ui:composition>
