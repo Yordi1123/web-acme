@@ -1,0 +1,219 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <h1 style="margin-bottom: 5px;"><i class="pi pi-eye" style="color: #8b5cf6;"></i> Seguimiento de Pedidos</h1>
+        <p style="color: #666; margin-top: 0;">Consulta el estado y detalle de todos tus requerimientos</p>
+
+        <h:form id="formSeguimiento">
+            <!-- Filtros -->
+            <p:panel styleClass="shadow-2" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <label style="font-weight: 500; margin-right: 8px;">Estado:</label>
+                        <p:selectOneMenu value="#{seguimientoBean.filtroEstado}" style="width: 180px;">
+                            <f:selectItem itemLabel="-- Todos --" itemValue="" />
+                            <f:selectItem itemLabel="Pendiente" itemValue="PENDIENTE" />
+                            <f:selectItem itemLabel="Observado" itemValue="OBSERVADO" />
+                            <f:selectItem itemLabel="Aprobado" itemValue="APROBADO" />
+                            <f:selectItem itemLabel="En Atención" itemValue="EN_ATENCION" />
+                            <f:selectItem itemLabel="Atendido Total" itemValue="ATENDIDO_TOTAL" />
+                            <f:selectItem itemLabel="Rechazado" itemValue="RECHAZADO" />
+                        </p:selectOneMenu>
+                    </div>
+                    <p:commandButton value="Filtrar" icon="pi pi-filter" actionListener="#{seguimientoBean.filtrar}"
+                        update="tablaPedidos" styleClass="ui-button-info" />
+                    <p:commandButton value="Limpiar" icon="pi pi-times"
+                        actionListener="#{seguimientoBean.limpiarFiltros}" update="@form"
+                        styleClass="ui-button-secondary" />
+                </div>
+            </p:panel>
+
+            <!-- Tabla de Requerimientos con Row Expansion -->
+            <p:dataTable id="tablaPedidos" value="#{seguimientoBean.requerimientos}" var="r" rowKey="#{r.id}"
+                paginator="true" rows="10" stripedRows="true" emptyMessage="No se encontraron requerimientos"
+                styleClass="shadow-2">
+
+                <f:facet name="header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 600;">Mis Requerimientos</span>
+                        <p:badge value="#{seguimientoBean.requerimientos.size()}" severity="info" />
+                    </div>
+                </f:facet>
+
+                <!-- Columna de expansión -->
+                <p:column style="width: 40px; text-align: center;">
+                    <p:rowToggler />
+                </p:column>
+
+                <p:column headerText="Código" width="130" sortBy="#{r.codigoReq}">
+                    <h:outputText value="#{r.codigoReq ne null ? r.codigoReq : 'REQ-'.concat(r.id)}"
+                        style="font-weight: bold; color: #3b82f6;" />
+                </p:column>
+
+                <p:column headerText="Fecha" width="100" sortBy="#{r.fechaSolicitud}">
+                    <h:outputText value="#{r.fechaSolicitud}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Área" width="60">
+                    <p:badge value="#{r.areaNegocio.prefijo}" severity="info" rendered="#{r.areaNegocio ne null}" />
+                </p:column>
+
+                <p:column headerText="Proyecto" sortBy="#{r.proyecto.nombre}">
+                    <h:outputText value="#{r.proyecto.nombre}" />
+                </p:column>
+
+                <p:column headerText="Jefe Aprobador">
+                    <h:outputText value="#{r.jefeAprobador.nombreCompleto}" rendered="#{r.jefeAprobador ne null}" />
+                </p:column>
+
+                <p:column headerText="Etapa" width="70" style="text-align: center;">
+                    <p:badge value="E#{r.etapa}" />
+                </p:column>
+
+                <p:column headerText="Items" width="70" style="text-align: center;">
+                    <p:badge value="#{r.detalles.size()}" severity="warning" />
+                </p:column>
+
+                <p:column headerText="Estado" width="130">
+                    <p:badge value="#{r.estado.label}" severity="#{r.estado eq 'APROBADO' ? 'success' : 
+                                   (r.estado eq 'RECHAZADO' ? 'danger' : 
+                                   (r.estado eq 'OBSERVADO' ? 'warning' : 
+                                   (r.estado eq 'ATENDIDO_TOTAL' ? 'success' : 'info')))}" />
+                </p:column>
+
+                <p:column headerText="Atención" width="140" style="text-align: center;">
+                    <p:badge value="#{r.estadoAtencion}" severity="#{r.severityAtencion}" />
+                    <br />
+                    <small style="color: #64748b;">#{r.porcentajeAtencion}%</small>
+                </p:column>
+
+                <!-- Row Expansion: Detalle del Requerimiento -->
+                <p:rowExpansion>
+                    <div style="padding: 15px; background: #f8fafc;">
+                        <!-- Info General en 2 columnas -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div
+                                style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <h4
+                                    style="margin-top: 0; color: #3b82f6; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">
+                                    <i class="pi pi-info-circle"></i> Información General
+                                </h4>
+                                <table style="width: 100%; font-size: 0.95em;">
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b; width: 40%;">Código:</td>
+                                        <td style="padding: 6px 0; font-weight: 600;">
+                                            #{r.codigoReq ne null ? r.codigoReq : 'REQ-'.concat(r.id)}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Fecha:</td>
+                                        <td style="padding: 6px 0;">
+                                            <h:outputText value="#{r.fechaSolicitud}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                                            </h:outputText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Solicitante:</td>
+                                        <td style="padding: 6px 0;">#{r.usuarioSolicitante.nombreCompleto}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Proyecto:</td>
+                                        <td style="padding: 6px 0;">#{r.proyecto.nombre}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Centro Costo:</td>
+                                        <td style="padding: 6px 0;">#{r.centroCosto.codigo} - #{r.centroCosto.nombre}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div
+                                style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <h4
+                                    style="margin-top: 0; color: #22c55e; border-bottom: 2px solid #22c55e; padding-bottom: 8px;">
+                                    <i class="pi pi-check-circle"></i> Estado
+                                </h4>
+                                <table style="width: 100%; font-size: 0.95em;">
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b; width: 40%;">Estado:</td>
+                                        <td style="padding: 6px 0;">
+                                            <p:badge value="#{r.estado.label}"
+                                                severity="#{r.estado eq 'APROBADO' ? 'success' : 'info'}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Etapa:</td>
+                                        <td style="padding: 6px 0;">Etapa #{r.etapa}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Jefe Aprobador:</td>
+                                        <td style="padding: 6px 0;">
+                                            #{r.jefeAprobador ne null ? r.jefeAprobador.nombreCompleto : 'No asignado'}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #64748b;">Observación:</td>
+                                        <td style="padding: 6px 0; color: #f59e0b;">
+                                            #{r.observacion ne null ? r.observacion : '-'}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Items -->
+                        <div
+                            style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <h4
+                                style="margin-top: 0; color: #f59e0b; border-bottom: 2px solid #f59e0b; padding-bottom: 8px;">
+                                <i class="pi pi-list"></i> Items del Requerimiento (#{r.detalles.size()})
+                            </h4>
+                            <p:dataTable value="#{r.detalles}" var="d" stripedRows="true" size="small"
+                                rowIndexVar="idx">
+                                <p:column headerText="#" width="40">
+                                    <h:outputText value="#{idx + 1}" />
+                                </p:column>
+                                <p:column headerText="Material">
+                                    <h:outputText value="#{d.material.nombre}" style="font-weight: 500;" />
+                                </p:column>
+                                <p:column headerText="Grupo" width="120">
+                                    <h:outputText value="#{d.material.grupo.nombre}" />
+                                </p:column>
+                                <p:column headerText="Unidad" width="80">
+                                    <h:outputText value="#{d.material.unidad.abreviatura}" />
+                                </p:column>
+                                <p:column headerText="Solicitado" width="100" style="text-align: right;">
+                                    <h:outputText value="#{d.cantidadSolicitada}">
+                                        <f:convertNumber minFractionDigits="2" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Atendido" width="100" style="text-align: right;">
+                                    <h:outputText value="#{d.cantidadAtendida ne null ? d.cantidadAtendida : 0}">
+                                        <f:convertNumber minFractionDigits="2" />
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Pendiente" width="100"
+                                    style="text-align: right; font-weight: bold; color: #dc2626;">
+                                    <h:outputText value="#{d.cantidadPendiente}">
+                                        <f:convertNumber minFractionDigits="2" />
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </p:rowExpansion>
+            </p:dataTable>
+        </h:form>
+
+        <style>
+            .shadow-2 {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </ui:define>
+</ui:composition>

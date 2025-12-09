@@ -50,6 +50,10 @@
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
+        .header-compras {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+
 
         .header-left {
             display: flex;
@@ -264,53 +268,123 @@
             </div>
 
             <h:form>
-                <p:menu>
-                    <!-- ===== MENÚ PARA JEFE DE ÁREA (Plano, sin categorías) ===== -->
-                    <c:if test="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
-                        <p:menuitem value="Mi Dashboard" icon="pi pi-home" outcome="/jefe/dashboard" />
-                        <p:menuitem value="Aprobaciones Pendientes" icon="pi pi-check-circle"
-                            outcome="/jefe/aprobacion" />
-                        <p:menuitem value="Seguimiento de Aprobados" icon="pi pi-chart-line"
-                            outcome="/jefe/seguimiento" />
-                    </c:if>
+                <!-- ===== MENÚ PARA ENCARGADO DE OBRA ===== -->
+                <c:if test="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA'}">
+                    <a href="#{facesContext.externalContext.requestContextPath}/encargado/dashboard.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-home"></i> Dashboard
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/encargado/mis_pedidos.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-shopping-cart"></i> Mis Pedidos
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/encargado/seguimiento.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-eye"></i> Seguimiento
+                    </a>
+                </c:if>
 
-                    <!-- ===== MENÚ PARA OTROS ROLES (Con categorías) ===== -->
-                    <c:if test="#{loginBean.usuarioLogueado.cargo ne 'JEFE_AREA'}">
-                        <!-- General - Visible para todos excepto Jefe -->
-                        <p:submenu label="Inicio">
-                            <p:menuitem value="Mi Dashboard" icon="pi pi-home"
-                                outcome="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' ? '/encargado/dashboard' : 
-                                          (loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR' ? '/admin/dashboard' : '/compras/dashboard')}" />
-                        </p:submenu>
+                <!-- ===== MENÚ PARA JEFE DE ÁREA ===== -->
+                <c:if test="#{loginBean.usuarioLogueado.cargo eq 'JEFE_AREA'}">
+                    <a href="#{facesContext.externalContext.requestContextPath}/jefe/dashboard.xhtml" class="nav-item">
+                        <i class="pi pi-home"></i> Dashboard
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/jefe/aprobacion.xhtml" class="nav-item">
+                        <i class="pi pi-check-circle"></i> Aprobaciones
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/jefe/seguimiento.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-chart-line"></i> Seguimiento
+                    </a>
+                </c:if>
 
-                        <!-- Almacén - Logística y Admin -->
-                        <p:submenu label="Almacén"
-                            rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
-                            <p:menuitem value="Materiales" outcome="/almacen/materiales" icon="pi pi-box" />
-                            <p:menuitem value="Grupos" outcome="/almacen/grupos" icon="pi pi-tags" />
-                            <p:menuitem value="Unidades" outcome="/almacen/unidades" icon="pi pi-th-large" />
-                        </p:submenu>
+                <!-- ===== MENÚ PARA EMPLEADO DE COMPRAS ===== -->
+                <c:if test="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS'}">
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/dashboard.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-home"></i> Dashboard
+                    </a>
 
-                        <!-- Maestros - Solo Admin -->
-                        <p:submenu label="Configuración"
-                            rendered="#{loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
-                            <p:menuitem value="Proyectos" outcome="/admin/proyectos" icon="pi pi-building" />
-                            <p:menuitem value="Proveedores" outcome="/admin/proveedores" icon="pi pi-truck" />
-                            <p:menuitem value="Usuarios" outcome="/admin/usuarios" icon="pi pi-users" />
-                        </p:submenu>
+                    <div class="nav-section-title">Compras</div>
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/pool_compras.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-inbox"></i> Pool de Compras
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/generar_orden.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-file-edit"></i> Generar Orden
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/reporte_ordenes.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-list"></i> Órdenes
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/seguimiento_pedidos.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-eye"></i> Seguimiento
+                    </a>
 
-                        <!-- Operaciones - Por Rol -->
-                        <p:submenu label="Operaciones">
-                            <p:menuitem value="Mis Pedidos" outcome="/encargado/mis_pedidos" icon="pi pi-shopping-cart"
-                                rendered="#{loginBean.usuarioLogueado.cargo eq 'ENCARGADO_OBRA' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
-                            <p:menuitem value="Seguimiento" outcome="/compras/seguimiento_pedidos" icon="pi pi-eye" />
-                            <p:menuitem value="Generar Orden" outcome="/compras/generar_orden" icon="pi pi-file-edit"
-                                rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
-                            <p:menuitem value="Pool de Compras" outcome="/compras/pool_compras" icon="pi pi-list"
-                                rendered="#{loginBean.usuarioLogueado.cargo eq 'EMPLEADO_COMPRAS' or loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}" />
-                        </p:submenu>
-                    </c:if>
-                </p:menu>
+                    <div class="nav-section-title">Almacén</div>
+                    <a href="#{facesContext.externalContext.requestContextPath}/almacen/materiales.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-box"></i> Materiales
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/almacen/grupos.xhtml" class="nav-item">
+                        <i class="pi pi-tags"></i> Grupos
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/almacen/unidades.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-th-large"></i> Unidades
+                    </a>
+                </c:if>
+
+                <!-- ===== MENÚ PARA ADMINISTRADOR ===== -->
+                <c:if test="#{loginBean.usuarioLogueado.cargo eq 'ADMINISTRADOR'}">
+                    <a href="#{facesContext.externalContext.requestContextPath}/admin/dashboard.xhtml" class="nav-item">
+                        <i class="pi pi-home"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section-title">Configuración</div>
+                    <a href="#{facesContext.externalContext.requestContextPath}/admin/usuarios.xhtml" class="nav-item">
+                        <i class="pi pi-users"></i> Usuarios
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/admin/proyectos.xhtml" class="nav-item">
+                        <i class="pi pi-building"></i> Proyectos
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/admin/proveedores.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-truck"></i> Proveedores
+                    </a>
+
+                    <div class="nav-section-title">Almacén</div>
+                    <a href="#{facesContext.externalContext.requestContextPath}/almacen/materiales.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-box"></i> Materiales
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/almacen/grupos.xhtml" class="nav-item">
+                        <i class="pi pi-tags"></i> Grupos
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/almacen/unidades.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-th-large"></i> Unidades
+                    </a>
+
+                    <div class="nav-section-title">Operaciones</div>
+                    <a href="#{facesContext.externalContext.requestContextPath}/encargado/mis_pedidos.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-shopping-cart"></i> Crear Pedidos
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/jefe/aprobacion.xhtml" class="nav-item">
+                        <i class="pi pi-check-circle"></i> Aprobaciones
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/pool_compras.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-inbox"></i> Pool de Compras
+                    </a>
+                    <a href="#{facesContext.externalContext.requestContextPath}/compras/reporte_ordenes.xhtml"
+                        class="nav-item">
+                        <i class="pi pi-list"></i> Órdenes
+                    </a>
+                </c:if>
             </h:form>
         </div>
 

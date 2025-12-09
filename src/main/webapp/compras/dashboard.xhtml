@@ -2,50 +2,129 @@
     xmlns:f="jakarta.faces.core" xmlns:ui="jakarta.faces.facelets" template="/WEB-INF/template.xhtml">
 
     <ui:define name="content">
-        <h1><i class="pi pi-shopping-cart" style="color: #ec4899;"></i> Dashboard de Compras</h1>
-        <p style="color: #666;">Bienvenido al módulo de compras</p>
+        <f:metadata>
+            <f:viewAction action="#{loginBean.verificarSesion}" />
+        </f:metadata>
 
-        <div class="grid"
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px;">
-            <a href="#{facesContext.externalContext.requestContextPath}/compras/pool_compras.xhtml"
-                style="text-decoration: none;">
-                <div class="dashboard-card"
-                    style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <i class="pi pi-list" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
-                    <h3 style="margin: 0 0 10px 0;">Pool de Compras</h3>
-                    <p style="margin: 0; opacity: 0.9;">Items pendientes</p>
-                </div>
-            </a>
+        <div class="p-grid">
+            <div class="p-col-12">
+                <h1 style="margin-bottom: 10px;">
+                    <i class="pi pi-shopping-cart" style="margin-right: 10px; color: #ec4899;"></i>
+                    Panel de Compras
+                </h1>
+                <p style="color: #666; margin-bottom: 30px;">
+                    Bienvenido, <strong>#{loginBean.usuarioLogueado.nombreCompleto}</strong>.
+                    Gestiona las órdenes de compra y requerimientos aprobados.
+                </p>
+            </div>
 
-            <a href="#{facesContext.externalContext.requestContextPath}/compras/generar_orden.xhtml"
-                style="text-decoration: none;">
-                <div class="dashboard-card"
-                    style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <i class="pi pi-file-edit" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
-                    <h3 style="margin: 0 0 10px 0;">Generar Orden</h3>
-                    <p style="margin: 0; opacity: 0.9;">Crear nueva orden de compra</p>
-                </div>
-            </a>
+            <!-- Fila 1: Operaciones Principales -->
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-inbox" style="margin-right: 8px; color: #8b5cf6;"></i> Pool de Compras
+                    </f:facet>
+                    <p>Bandeja de requerimientos aprobados listos para generar órdenes de compra.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ir al Pool" outcome="/compras/pool_compras" icon="pi pi-arrow-right"
+                            styleClass="ui-button-help" />
+                    </f:facet>
+                </p:card>
+            </div>
 
-            <a href="#{facesContext.externalContext.requestContextPath}/compras/reporte_ordenes.xhtml"
-                style="text-decoration: none;">
-                <div class="dashboard-card"
-                    style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <i class="pi pi-chart-bar" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
-                    <h3 style="margin: 0 0 10px 0;">Reportes</h3>
-                    <p style="margin: 0; opacity: 0.9;">Consultar órdenes generadas</p>
-                </div>
-            </a>
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-file-edit" style="margin-right: 8px; color: #10b981;"></i> Generar Orden
+                    </f:facet>
+                    <p>Crear una nueva orden de compra para un proveedor.</p>
+                    <f:facet name="footer">
+                        <p:button value="Nueva Orden" outcome="/compras/generar_orden" icon="pi pi-plus"
+                            styleClass="ui-button-success" />
+                    </f:facet>
+                </p:card>
+            </div>
 
-            <a href="#{facesContext.externalContext.requestContextPath}/almacen/materiales.xhtml"
-                style="text-decoration: none;">
-                <div class="dashboard-card"
-                    style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <i class="pi pi-box" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
-                    <h3 style="margin: 0 0 10px 0;">Almacén</h3>
-                    <p style="margin: 0; opacity: 0.9;">Gestionar materiales</p>
-                </div>
-            </a>
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-list" style="margin-right: 8px; color: #f59e0b;"></i> Órdenes de Compra
+                    </f:facet>
+                    <p>Consulta, aprueba y gestiona las órdenes generadas.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Órdenes" outcome="/compras/reporte_ordenes" icon="pi pi-search"
+                            styleClass="ui-button-warning" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <!-- Fila 2: Almacén -->
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-box" style="margin-right: 8px; color: #3b82f6;"></i> Materiales
+                    </f:facet>
+                    <p>Catálogo maestro de materiales del almacén.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Materiales" outcome="/almacen/materiales" icon="pi pi-th-large"
+                            styleClass="ui-button-primary" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-tags" style="margin-right: 8px; color: #06b6d4;"></i> Grupos
+                    </f:facet>
+                    <p>Clasificación de materiales por categorías.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Grupos" outcome="/almacen/grupos" icon="pi pi-sitemap"
+                            styleClass="ui-button-info" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-calculator" style="margin-right: 8px; color: #ec4899;"></i> Unidades
+                    </f:facet>
+                    <p>Unidades de medida del sistema.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Unidades" outcome="/almacen/unidades" icon="pi pi-table"
+                            styleClass="ui-button-secondary" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <!-- Fila 3: Seguimiento -->
+            <div class="p-col-12 p-md-6">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-eye" style="margin-right: 8px; color: #6366f1;"></i> Seguimiento
+                    </f:facet>
+                    <p>Monitorea el estado de todos los requerimientos del sistema.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Seguimiento" outcome="/compras/seguimiento_pedidos" icon="pi pi-chart-line"
+                            styleClass="ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
+
+            <div class="p-col-12 p-md-6">
+                <p:card>
+                    <f:facet name="title">
+                        <i class="pi pi-truck" style="margin-right: 8px; color: #22c55e;"></i> Proveedores
+                    </f:facet>
+                    <p>Consulta la información de proveedores registrados.</p>
+                    <f:facet name="footer">
+                        <p:button value="Ver Proveedores" outcome="/admin/proveedores" icon="pi pi-external-link"
+                            styleClass="ui-button-outlined" />
+                    </f:facet>
+                </p:card>
+            </div>
         </div>
     </ui:define>
+
 </ui:composition>
