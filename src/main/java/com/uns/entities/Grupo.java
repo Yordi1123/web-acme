@@ -17,6 +17,9 @@ public class Grupo implements Serializable {
     @Column(name = "codgrupo", length = 3, nullable = false)
     private String codGrupo;
 
+    @Column(length = 85, nullable = false)
+    private String nombre;
+
     @Column(length = 85)
     private String descripcion;
 
@@ -35,6 +38,9 @@ public class Grupo implements Serializable {
 
     public String getCodGrupo() { return codGrupo; }
     public void setCodGrupo(String codGrupo) { this.codGrupo = codGrupo; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }

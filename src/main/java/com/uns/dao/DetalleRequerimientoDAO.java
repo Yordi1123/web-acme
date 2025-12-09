@@ -67,4 +67,26 @@ public class DetalleRequerimientoDAO {
         }
         return lista;
     }
+
+    public List<DetalleRequerimiento> findByRequerimientoConMaterial(Long idRequerimiento) {
+        EntityManager em = JPAFactory.getEntityManager();
+        List<DetalleRequerimiento> lista = new ArrayList<>();
+        try {
+            lista = em.createQuery(
+                "SELECT d FROM DetalleRequerimiento d " +
+                "JOIN FETCH d.material m " +
+                "JOIN FETCH m.unidad " +
+                "JOIN FETCH m.grupo " +
+                "WHERE d.requerimiento.id = :idReq", 
+                DetalleRequerimiento.class)
+                .setParameter("idReq", idRequerimiento)
+                .getResultList();
+        } catch (Exception e) {
+            System.out.println("Error en DetalleRequerimientoDAO.findByRequerimientoConMaterial: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return lista;
+    }
 }

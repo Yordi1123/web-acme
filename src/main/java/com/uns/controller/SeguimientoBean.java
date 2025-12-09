@@ -55,10 +55,28 @@ public class SeguimientoBean implements Serializable {
         requerimientos = todosRequerimientos;
     }
 
+    // Para el diálogo de detalle
+    private Requerimiento requerimientoSeleccionado;
+    private List<com.uns.entities.DetalleRequerimiento> detallesSeleccionados;
+    private com.uns.dao.DetalleRequerimientoDAO detalleDAO = new com.uns.dao.DetalleRequerimientoDAO();
+
+    public void seleccionar(Requerimiento req) {
+        System.out.println(">>> SeguimientoBean.seleccionar() - ID: " + req.getId());
+        this.requerimientoSeleccionado = req;
+        // Cargar detalles frescos desde la base de datos
+        this.detallesSeleccionados = detalleDAO.findByRequerimientoConMaterial(req.getId());
+        System.out.println(">>> Detalles cargados: " + (detallesSeleccionados != null ? detallesSeleccionados.size() : 0));
+    }
+
     // Getters y Setters
     public List<Requerimiento> getRequerimientos() { return requerimientos; }
     public void setRequerimientos(List<Requerimiento> requerimientos) { this.requerimientos = requerimientos; }
 
     public String getFiltroEstado() { return filtroEstado; }
     public void setFiltroEstado(String filtroEstado) { this.filtroEstado = filtroEstado; }
+
+    public Requerimiento getRequerimientoSeleccionado() { return requerimientoSeleccionado; }
+    public void setRequerimientoSeleccionado(Requerimiento r) { this.requerimientoSeleccionado = r; }
+
+    public List<com.uns.entities.DetalleRequerimiento> getDetallesSeleccionados() { return detallesSeleccionados; }
 }
