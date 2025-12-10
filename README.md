@@ -68,20 +68,58 @@ mvn clean package
 
 ```
 web-acme/
-├── src/main/java/com/uns/
-│   ├── config/      # Configuración JPA (EntityManagerFactory)
-│   ├── controller/  # Managed Beans (Lógica de vista)
-│   ├── dao/         # Data Access Objects (Acceso a BD)
-│   ├── entities/    # Entidades JPA (Mapeo ORM)
-│   └── enums/       # Enumeradores de estado y roles
-├── src/main/webapp/
-│   ├── WEB-INF/     # template.xhtml, web.xml
-│   ├── almacen/     # Vistas de almacén
-│   ├── compras/     # Vistas transaccionales de compras
-│   ├── maestros/    # Vistas de mantenimiento (CRUDs)
-│   └── index.xhtml  # Dashboard principal
-└── pom.xml          # Dependencias Maven
+├── src/main/
+│   ├── java/com/uns/
+│   │   ├── config/      # Configuración JPA (EntityManagerFactory)
+│   │   ├── controller/  # Managed Beans (Lógica de vista)
+│   │   ├── dao/         # Data Access Objects (Acceso a BD)
+│   │   ├── entities/    # Entidades JPA (Mapeo ORM)
+│   │   └── enums/       # Enumeradores de estado y roles
+│   ├── resources/
+│   │   └── META-INF/persistence.xml  # Configuración JPA
+│   └── webapp/
+│       ├── WEB-INF/     # template.xhtml, web.xml, beans.xml
+│       ├── admin/       # Dashboard: Usuarios, Proyectos, Proveedores
+│       ├── almacen/     # Gestión: Grupos, Materiales, Unidades
+│       ├── compras/     # Transaccional: Órdenes, Pool, Reportes, Seguimiento
+│       ├── encargado/   # Mis Pedidos y Seguimiento
+│       ├── jefe/        # Aprobación y Seguimiento de Pedidos
+│       ├── resources/   # Imágenes y assets estáticos
+│       ├── index.xhtml  # Página de inicio
+│       └── login.xhtml  # Autenticación
+├── target/              # Compilados y WAR generado
+├── pom.xml              # Dependencias Maven
+├── dbprueba.sql         # Script inicial de base de datos
+└── README.md            # Este archivo
 ```
+
+## 🔄 Estado Actual del Proyecto
+
+### ✅ Completado
+- Arquitectura base con Jakarta EE 10
+- Módulos de almacén, maestros y compras implementados
+- Interfaz con PrimeFaces y Facelets
+- Modelos de datos completos (Entidades JPA)
+- DAOs y acceso a base de datos funcional
+- Managed Beans para controladores
+
+### 🔧 En Desarrollo / Pendiente
+- Sistema de autenticación y autorización avanzado
+- Workflow de aprobación con notificaciones
+- Reportes avanzados con exportación
+- Validaciones de negocio completas
+- Pruebas unitarias e integración
+- Documentación de APIs
+
+## 📊 Módulos Implementados
+
+| Módulo | Estado | Funcionalidades |
+|--------|--------|-----------------|
+| **Admin** | ✅ Básico | Gestión de Usuarios, Proyectos, Proveedores |
+| **Almacén** | ✅ Básico | Grupos, Materiales, Unidades de Medida |
+| **Compras** | 🔄 En Progreso | Órdenes, Pool de Compras, Reportes, Seguimiento |
+| **Encargado** | ✅ Básico | Mis Pedidos, Seguimiento |
+| **Jefe** | ✅ Básico | Aprobación, Seguimiento |
 
 ## 📄 Licencia
 
