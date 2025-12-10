@@ -165,6 +165,9 @@ public class RequerimientoBean implements Serializable {
                 
                 em.getTransaction().commit();
                 
+                // Limpiar caché L2 de JPA para forzar recarga desde BD
+                em.getEntityManagerFactory().getCache().evictAll();
+                
                 nuevoRequerimiento();
                 cargarMisRequerimientos();
                 
