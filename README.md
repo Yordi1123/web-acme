@@ -93,7 +93,7 @@ web-acme/
 └── README.md            # Este archivo
 ```
 
-## 🔄 Estado Actual del Proyecto
+## 🔄 Estado del Proyecto
 
 ### ✅ Completado
 - Arquitectura base con Jakarta EE 10
@@ -102,14 +102,6 @@ web-acme/
 - Modelos de datos completos (Entidades JPA)
 - DAOs y acceso a base de datos funcional
 - Managed Beans para controladores
-
-### 🔧 En Desarrollo / Pendiente
-- Sistema de autenticación y autorización avanzado
-- Workflow de aprobación con notificaciones
-- Reportes avanzados con exportación
-- Validaciones de negocio completas
-- Pruebas unitarias e integración
-- Documentación de APIs
 
 ## 📊 Módulos Implementados
 
